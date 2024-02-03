@@ -1,0 +1,173 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+input[type="range"] {
+  -webkit-appearance: none; /* Remove default styles in Safari/Chrome */
+  width: 100%; /* Set the width to fill its container */
+  height: 10px; /* Set the height to control the thickness of the track */
+  background: #9794ff; /* Set the background color of the track */
+  border-radius: 5px; /* Optional: Set border-radius for rounded corners */
+  outline: none; /* Remove default focus style */
+}
+
+/* Customize the appearance of the thumb (slider handle) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Remove default styles in Safari/Chrome */
+  width: 20px; /* Set the width of the thumb */
+  height: 20px; /* Set the height of the thumb */
+  background: #9794ff; /* Set the background color of the thumb */
+  border-radius: 50%; /* Optional: Create a circular thumb */
+  cursor: pointer; /* Set cursor style */
+}
+
+@keyframes playerAnimation {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(1%);
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --def-color: #9794ff;
+}
+
+@layer base {
+  body {
+    box-sizing: border-box;
+    margin: 0;
+  }
+  .home-con {
+    @apply h-screen w-screen bg-black flex overflow-x-hidden overflow-y-auto;
+  }
+}
+
+/**Home Component**/
+
+@layer base {
+  .home-sidebar {
+    @apply h-full w-[15%] border-solid border-2 border-[#9794FF] p-3 border-l-0 border-t-0 border-b-0;
+  }
+
+  .home-sidebar > img {
+    @apply w-[50%] ml-[20%];
+  }
+
+  .home-page {
+    @apply h-full w-[85%] border-solid pt-5 overflow-x-hidden overflow-y-scroll;
+    background-image: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.7),
+      #3a3a4b,
+      #9794ff
+    );
+  }
+
+  .home-page > h1 {
+    @apply text-white capitalize font-sans font-semibold ml-5 text-2xl;
+  }
+
+  .home-page > div {
+    @apply h-[50%] w-full flex flex-col justify-around items-start content-start flex-wrap overflow-x-auto overflow-y-hidden p-2;
+  }
+
+  .songs {
+    @apply h-[90%] w-[20%] m-3 text-white py-3 px-5 flex flex-col justify-between rounded-md cursor-pointer relative;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .songs > img {
+    @apply h-[80%] rounded-md;
+  }
+
+  .songs-logo {
+    position: absolute;
+    height: 12% !important;
+    width: 13%;
+  }
+
+  .songs > p {
+    @apply h-[15%]  mt-[1%] overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+
+  .home-page > div::-webkit-scrollbar {
+    display: none;
+  }
+
+  .songs > button {
+    @apply absolute bottom-5 right-5 text-[var(--def-color)];
+  }
+
+  .songs-button {
+    @apply hidden;
+  }
+
+  .songs:hover .songs-button {
+    @apply inline absolute bottom-5 right-5 text-[var(--def-color)];
+  }
+
+  #player1 {
+    display: none;
+  }
+
+  #player {
+    @apply border-solid border-red-700 border-2 h-[15%] w-[85%] bottom-0 fixed flex flex-row justify-start items-center;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    animation: playerAnimation 0.5s linear;
+  }
+
+  #player > img {
+    @apply h-[100%] w-[7%] rounded-md;
+  }
+
+  #player > div {
+    @apply ml-5;
+  }
+
+  #player > div > h4 {
+    @apply text-white font-sans font-semibold m-0  max-h-8  text-ellipsis overflow-hidden whitespace-nowrap;
+    width: 20vw;
+  }
+  #player > div > p {
+    @apply text-white font-mono  max-h-8 text-ellipsis overflow-hidden whitespace-nowrap;
+    width: 20vw;
+  }
+
+  .player-box {
+    width: 40%;
+    @apply flex justify-around items-center;
+  }
+
+  .player-box > button {
+    @apply text-[var(--def-color)]  text-2xl;
+  }
+  .volume-box {
+    width: 20%;
+    @apply mt-2 flex justify-around items-center;
+  }
+
+  .volume-box > button {
+    @apply text-[var(--def-color)]  text-2xl;
+  }
+
+  #volumeControl {
+    width: 70%;
+  }
+}
