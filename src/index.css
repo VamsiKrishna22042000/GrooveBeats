@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   margin: 0;
+  font-family: "Poppins", sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -26,6 +27,35 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer; /* Set cursor style */
 }
 
+/* Style for the clear button in the search input */
+input[type="search"]::-webkit-search-clear-button,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("path/to/your/custom-clear-icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin-right: 8px; /* Adjust margin as needed */
+}
+
+/* Optional: Style the search input itself */
+input[type="search"] {
+  backdrop-filter: blur(4px) saturate(180%);
+  -webkit-backdrop-filter: blur(4px) saturate(180%);
+  background-color: rgba(17, 25, 40, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  padding-right: 24px; /* Adjust padding to make space for the clear button */
+  color: white; /* Text color */
+}
+
+/* Standard style for Firefox */
+input[type="search"]::-ms-clear {
+  display: none;
+}
+
 @keyframes playerAnimation {
   0% {
     transform: translateY(100%);
@@ -33,6 +63,44 @@ input[type="range"]::-webkit-slider-thumb {
   100% {
     transform: translateY(1%);
   }
+}
+
+@keyframes searchResultsShow {
+  0% {
+    @apply absolute h-[0%] w-[0%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+  50% {
+    @apply absolute h-[10%] w-[80%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+  100% {
+    @apply absolute h-[70%] w-[80%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+}
+@keyframes searchResultsClose {
+  0% {
+    @apply absolute h-[70%] w-[80%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+  50% {
+    @apply absolute h-[10%] w-[80%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+  100% {
+    @apply absolute h-[0%] w-[0%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+  }
+}
+
+/**insection observer animaton**/
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(20vh);
+  visibility: hidden;
+  transition: opacity 0.6s ease-out, transform 1.2s ease-out;
+  will-change: opacity, visibility;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
 }
 
 @tailwind base;
@@ -49,7 +117,99 @@ input[type="range"]::-webkit-slider-thumb {
     margin: 0;
   }
   .home-con {
-    @apply h-screen w-screen bg-black flex overflow-x-hidden overflow-y-auto;
+    @apply h-lvh w-lvw bg-black flex overflow-x-hidden overflow-y-auto;
+  }
+}
+
+/**Nav Bar**/
+@layer base {
+  #nav-bar {
+    @apply w-[100%] h-[10%] m-0 p-0 top-0 flex items-center mb-10 py-1;
+  }
+
+  .searchbox {
+    @apply h-full w-auto flex items-center ml-[10%] relative;
+    height: 100%;
+  }
+
+  .searchbar {
+    @apply outline-none text-white flex pl-6 h-[80%]  rounded-md mt-2;
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .searchresults1 {
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    animation: searchResultsShow 1s infinite 0.1s;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  .searchresults2 {
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    @apply absolute h-[70%] w-[80%] z-10 top-[10%] rounded-md flex justify-start items-start p-1 flex-wrap;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  .searchresults3 {
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    animation: searchResultsClose 1s infinite;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  .cross {
+    @apply absolute text-xl top-5 right-2;
+    color: rgba(255, 255, 255, 0.125);
+  }
+
+  .searchresults2 > div {
+    @apply h-[50%] w-[45%] mx-5 my-2 text-white;
+  }
+  .searchresults2 > div > div {
+    @apply h-[90%] w-full  mb-5;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  .searchresults2 > div > div > div {
+    @apply h-auto w-full  p-0 flex flex-col justify-center items-center my-2;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  .songs-search {
+    @apply h-[80px] w-[70%] my-2  text-white py-3 px-5 flex justify-start items-center rounded-md cursor-pointer relative;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    overflow: hidden;
+  }
+
+  #songs-logo-search {
+    @apply h-[20%!important] w-[5%!important] absolute top-3;
+  }
+
+  .songs-search > img {
+    @apply h-full w-[25%] mr-5;
+  }
+
+  .songs-search > p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -57,15 +217,24 @@ input[type="range"]::-webkit-slider-thumb {
 
 @layer base {
   .home-sidebar {
-    @apply h-full w-[15%] border-solid border-2 border-[#9794FF] p-3 border-l-0 border-t-0 border-b-0;
+    @apply h-full w-[15%] border-solid border-2 border-[#9794FF] p-2 border-l-0 border-t-0 border-b-0;
   }
 
-  .home-sidebar > img {
-    @apply w-[50%] ml-[20%];
+  .home-sidebar > div {
+    @apply flex justify-around items-center mt-5 mb-10;
+  }
+
+  .home-sidebar > div > img {
+    @apply w-[25%];
+  }
+
+  .home-sidebar > div > span {
+    @apply text-[#9794ff] text-xl;
+    font-family: "Protest Revolution", sans-serif;
   }
 
   .home-page {
-    @apply h-full w-[85%] border-solid pt-5 overflow-x-hidden overflow-y-scroll;
+    @apply h-full w-[85%] border-solid  overflow-x-hidden overflow-y-scroll relative;
     background-image: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.7),
@@ -75,7 +244,7 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   .home-page > h1 {
-    @apply text-white capitalize font-sans font-semibold ml-5 text-2xl;
+    @apply text-white capitalize  font-semibold ml-5 text-2xl;
   }
 
   .home-page > div {
@@ -88,6 +257,30 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .hidden1 {
+    display: none !important;
+  }
+
+  .tiltcon {
+    opacity: 0;
+    transform: translateY(10vh);
+  }
+
+  .fade-in {
+    animation: fadeInAnimation 0.5s ease forwards;
+  }
+
+  @keyframes fadeInAnimation {
+    from {
+      opacity: 0;
+      transform: translateY(10vh);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .songs > img {
@@ -142,11 +335,11 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   #player > div > h4 {
-    @apply text-white font-sans font-semibold m-0  max-h-8  text-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-white  font-semibold m-0  max-h-8  text-ellipsis overflow-hidden whitespace-nowrap;
     width: 20vw;
   }
   #player > div > p {
-    @apply text-white font-mono  max-h-8 text-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-white   max-h-8 text-ellipsis overflow-hidden whitespace-nowrap;
     width: 20vw;
   }
 
@@ -169,5 +362,118 @@ input[type="range"]::-webkit-slider-thumb {
 
   #volumeControl {
     width: 70%;
+  }
+}
+
+/**Selected Song**/
+@layer base {
+  .selectedBackGround {
+    @apply fixed top-0 left-0 right-0 bottom-0;
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .selectedSongCon {
+    @apply fixed top-[15%] left-[25%] right-[15%] bottom-[15%] rounded-lg overflow-x-hidden overflow-y-scroll flex justify-start items-start content-start flex-wrap;
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+}
+
+/**Albums**/
+
+@layer base {
+  .album-header {
+    @apply w-full h-[50%]  text-white p-3 flex justify-start items-center;
+  }
+
+  .album-header > img {
+    @apply h-full w-[25%] ml-[10%] rounded-md mr-[5%];
+  }
+  .album-header > div {
+    @apply h-full w-auto;
+  }
+
+  .album-header > div > h1 {
+    @apply text-3xl mb-[3%] mt-[5%];
+  }
+  .album-header > div > h4 {
+    @apply ml-[2%] mb-[5%] w-[100%];
+  }
+
+  .album-details > div {
+    @apply flex justify-start items-center;
+    height: 30%;
+    width: 100%;
+  }
+
+  .album-details > div > button {
+    @apply text-4xl text-black py-[5.5%] ml-[2%] rounded-[50%] flex justify-center items-center px-[6%];
+    background-color: var(--def-color);
+    color: #3a3a4b;
+  }
+  .album-details > div > button:last-child {
+    @apply bg-transparent;
+  }
+  .album-details > div > button:last-child > svg {
+    color: var(--def-color);
+  }
+
+  .album-songs {
+    height: auto !important;
+    width: 100%;
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important; /* Enable vertical scrolling when needed */
+  }
+
+  .album-songs > div {
+    height: auto;
+    width: 100%; /* Ensure each div occupies the full width */
+    box-sizing: border-box; /* Include border in width calculation */
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1% 0%;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: white;
+  }
+  .album-songs > div > img {
+    height: 3rem;
+    width: 3rem;
+    object-fit: cover;
+    margin: 1%;
+  }
+  .album-songs > div h3 {
+    font-size: 1.25rem; /* Equivalent to text-2xl */
+    margin-left: 1.25rem; /* Equivalent to ml-5 */
+    margin-right: 2.5rem; /* Equivalent to mr-10 */
+    width: 15rem; /* Equivalent to w-[20rem] */
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Adjusted to nowrap for ellipsis to work */
+    overflow: hidden;
+    min-width: 15rem;
+  }
+
+  .album-songs > div p {
+    font-size: 1rem; /* Equivalent to text-2xl */
+    margin-left: 5rem; /* Equivalent to ml-5 */
+    margin-right: 5rem; /* Equivalent to mr-10 */
+    width: 15rem; /* Equivalent to w-[20rem] */
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Adjusted to nowrap for ellipsis to work */
+    overflow: hidden;
+    min-width: 15rem;
   }
 }
