@@ -294,7 +294,17 @@ const Home = () => {
                 : [],
           },
         ];
-        setSearchResults(obtainedData);
+        if (
+          obtainedData[0].songs.length === 0 &&
+          obtainedData[1].albums.length === 0 &&
+          obtainedData[2].playlists.length === 0 &&
+          obtainedData[3].topQuery.length === 0 &&
+          obtainedData[4].artists.length === 0
+        ) {
+          setSearchResults([]);
+        } else {
+          setSearchResults(obtainedData);
+        }
       }
     } catch (error) {
       if (axios.isCancel(error)) {
@@ -543,7 +553,7 @@ const Home = () => {
                     />
                     {searchBar.search !== "" && (
                       <RxCross2
-                        className="cross cursor-pointer"
+                        className="cross cursor-pointer text-white"
                         onClick={() => {
                           setSearchBar({ ...searchBar, search: "" });
                         }}
@@ -551,6 +561,19 @@ const Home = () => {
                     )}
                   </div>
                   <div className={searchBar.animation}>
+                    {searchBar.animation === "searchresults2" && (
+                      <RxCross2
+                        className="cross cursor-pointer mr-5 text-white"
+                        onClick={() => {
+                          setSearchBar({ ...searchBar, search: "" });
+                        }}
+                      />
+                    )}
+                    {searchResults.length <= 0 && (
+                      <h1 className="text-white text-5xl ml-52 mt-48">
+                        No Results Found
+                      </h1>
+                    )}
                     {searchBar.animation === "searchresults2" &&
                     searchBar.search === "" ? (
                       <>
@@ -1633,6 +1656,22 @@ const Home = () => {
                     )}
                   </div>
                 </div>
+                {obtainedAlbum !== null && (
+                  <img
+                    onClick={() => {
+                      setWhatToDisplay(
+                        whatToDisplay === displayingContent.albums
+                          ? displayingContent.home
+                          : displayingContent.albums
+                      );
+                    }}
+                    className="fixed z-10 h-16 w-16 rounded-full top-10 right-5 object-fill animate-bounce cursor-pointer"
+                    src={
+                      obtainedAlbum.image[obtainedAlbum.image.length - 1].link
+                    }
+                    alt={obtainedAlbum.id}
+                  />
+                )}
                 {whatToDisplay === displayingContent.home ? (
                   <>
                     {/**Trending songs */}
@@ -2220,6 +2259,7 @@ const Home = () => {
                       setWhatToDisplay={setWhatToDisplay}
                       playSelectedSong={playSelectedSong}
                       setPlaySong={setPlaySong}
+                      playSong={playSong}
                     />
                   )
                 )}

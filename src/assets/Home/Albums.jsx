@@ -17,15 +17,17 @@ const Albums = ({
   playSelectedSong,
   setWhatToDisplay,
   setPlaySong,
+  playSong,
 }) => {
-  const [playPause, setPlayPause] = useState(false);
   const [fav, setFav] = useState(false);
 
   useEffect(() => {
     const audiotag = document.querySelector(".album-header");
     audiotag.scrollIntoView({ behavior: "smooth" });
-    playSelectedSong(obtainedAlbum.songs[0].id, obtainedAlbum.songs);
-    setPlayPause(!playPause);
+    if (playSong === false) {
+      playSelectedSong(obtainedAlbum.songs[0].id, obtainedAlbum.songs);
+      setPlayPause(!playPause);
+    }
   }, []);
 
   return (
@@ -55,13 +57,12 @@ const Albums = ({
               Primary Artist &nbsp;: &nbsp; {obtainedAlbum.primaryArtists}
             </h4>
             <div>
-              {playPause ? (
+              {playSong ? (
                 <button
                   onClick={() => {
                     const audiotag = document.getElementById("audiotag");
                     audiotag.pause();
                     setPlaySong(false);
-                    setPlayPause(!playPause);
                   }}
                   type="button"
                 >
@@ -73,7 +74,6 @@ const Albums = ({
                     const audiotag = document.getElementById("audiotag");
                     audiotag.play();
                     setPlaySong(true);
-                    setPlayPause(!playPause);
                   }}
                   type="button"
                 >
