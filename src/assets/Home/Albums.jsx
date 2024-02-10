@@ -26,7 +26,6 @@ const Albums = ({
     audiotag.scrollIntoView({ behavior: "smooth" });
     if (playSong === false) {
       playSelectedSong(obtainedAlbum.songs[0].id, obtainedAlbum.songs);
-      setPlayPause(!playPause);
     }
   }, []);
 
