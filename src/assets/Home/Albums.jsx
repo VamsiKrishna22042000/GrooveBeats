@@ -24,9 +24,6 @@ const Albums = ({
   useEffect(() => {
     const audiotag = document.querySelector(".album-header");
     audiotag.scrollIntoView({ behavior: "smooth" });
-    if (playSong === false) {
-      playSelectedSong(obtainedAlbum.songs[0].id, obtainedAlbum.songs);
-    }
   }, []);
 
   return (
@@ -37,14 +34,25 @@ const Albums = ({
             onClick={() => {
               setWhatToDisplay(displayingContent.home);
             }}
-            className="text-3xl absolute top-[20%] font-extrabold right-10 cursor-pointer"
+            className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%] "
+            style={{
+              fontSize: "clamp(.7rem,2.2vw, 2rem)",
+              backdropFilter: "blur(16px) saturate(180%)",
+              WebkitBackdropFilter: "blur(16px) saturate(180%)",
+              backgroundColor: "rgba(17, 25, 40, 0.75)",
+              border: "1px solid white",
+              overflow: "hidden",
+            }}
           >
-            <IoIosArrowBack />
+            <IoIosArrowBack className="ml-[-5%]" />
           </h1>
-          <img
-            src={obtainedAlbum.image[obtainedAlbum.image.length - 1].link}
-            alt={obtainedAlbum.name}
-          />
+          <div id="allbum-image-con">
+            <img
+              src={obtainedAlbum.image[obtainedAlbum.image.length - 1].link}
+              alt={obtainedAlbum.name}
+            />
+          </div>
+
           <div className="album-details">
             <h1>{obtainedAlbum.name}</h1>
             <h4>
@@ -145,13 +153,23 @@ const Albums = ({
                   <FaRegHeart />
                 </button>
               )}
-              <p
-                onClick={() => {
-                  playSelectedSong(each.id, obtainedAlbum.songs);
-                }}
-              >
-                {each.duration[0]}&nbsp;:&nbsp;{each.duration.slice(1)}
-              </p>
+              {each.duration.length > 2 ? (
+                <p
+                  onClick={() => {
+                    playSelectedSong(each.id, obtainedAlbum.songs);
+                  }}
+                >
+                  {each.duration[0]}&nbsp;:&nbsp;{each.duration.slice(1)}
+                </p>
+              ) : (
+                <p
+                  onClick={() => {
+                    playSelectedSong(each.id, obtainedAlbum.songs);
+                  }}
+                >
+                  {0}&nbsp;:&nbsp;{each.duration}
+                </p>
+              )}
             </div>
           ))}
         </div>
