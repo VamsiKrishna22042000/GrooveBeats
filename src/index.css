@@ -70,10 +70,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .timertime {
-  font-size: 0.7rem;
+  font-size: clamp(0.5rem, 1.2rem, 0.8rem);
   color: #ffffff;
   top: 45%;
-  right: 1.25%;
+  right: 0.7%;
   position: absolute;
 }
 
@@ -330,6 +330,7 @@ input[type="search"]::-ms-clear {
     overflow-x: scroll;
     overflow-y: hidden;
     padding-left: 3%;
+    transition: all linear 0.3s;
   }
 
   .songs {

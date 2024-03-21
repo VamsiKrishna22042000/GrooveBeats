@@ -7,6 +7,7 @@ import Albums from "./Albums";
 /**Dependencies*/
 import axios from "axios";
 import Tilt from "react-parallax-tilt";
+import { MagnifyingGlass } from "react-loader-spinner";
 
 /**Icons */
 import { FaPause, FaPlay } from "react-icons/fa";
@@ -64,6 +65,8 @@ const Home = () => {
     currentTime: 0,
   });
 
+  const [noresults, setNoResults] = useState(false);
+
   /**Observer Animation */
 
   useEffect(() => {
@@ -96,21 +99,26 @@ const Home = () => {
     if (searchBar.animation === "searchresults1" && searchBar.search !== "") {
       clearTimeout(searchTimeId);
       setSearchBar({ ...searchBar, animation: "searchresults2" });
-    } else if (
-      searchBar.animation === "searchresults2" &&
-      searchBar.search === ""
-    ) {
-      document.getElementById("search").blur();
-      setSearchBar({ ...searchBar, animation: "searchresults3" });
-      setTimeout(() => {
-        setSearchBar({ ...searchBar, animation: "" });
-      }, 1000);
     }
+    // else if (
+    //   searchBar.animation === "searchresults2" &&
+    //   searchBar.search === ""
+    // ) {
+    //   document.getElementById("search").blur();
+    //   setSearchBar({ ...searchBar, animation: "searchresults3" });
+    //   setTimeout(() => {
+    //     setSearchBar({ ...searchBar, animation: "" });
+    //   }, 1000);
+    // }
   }, [searchBar.search]);
 
   useEffect(() => {
     if (searchBar.search !== "") {
       searchFunction();
+      setNoResults(true);
+      setTimeout(() => {
+        setNoResults(false);
+      }, 1000);
     }
   }, [searchBar.search]);
 
@@ -291,7 +299,7 @@ const Home = () => {
 
       cancelTokenSource = axios.CancelToken.source();
 
-      const url = `${import.meta.env.VITE_ROOT_URL}/search/all?query=${
+      const url = `${import.meta.env.VITE_UPDATE_URL}/search?query=${
         searchBar.search
       }`;
 
@@ -444,6 +452,23 @@ const Home = () => {
     audio.currentTime = seekTime;
   };
 
+  function moveCarousel(direction, container) {
+    const carousel = document.getElementById(container);
+    const deviceWidth = window.innerWidth; // Get the width of the device viewport
+
+    if (direction === "left") {
+      carousel.scrollBy({
+        left: -deviceWidth,
+        behavior: "smooth",
+      });
+    } else if (direction === "right") {
+      carousel.scrollBy({
+        left: deviceWidth,
+        behavior: "smooth",
+      });
+    }
+  }
+
   return (
     <>
       <audio ref={audioref} id="audiotag" type="audio/mp3" />
@@ -572,17 +597,19 @@ const Home = () => {
                         setSearchBar({ ...searchBar, search: e.target.value });
                       }}
                       onFocus={() => {
-                        setSearchBar({
-                          ...searchBar,
-                          animation: "searchresults1",
-                        });
-                        const timeId = setTimeout(() => {
+                        if (searchBar.animation !== "searchresults2") {
                           setSearchBar({
                             ...searchBar,
-                            animation: "searchresults2",
+                            animation: "searchresults1",
                           });
-                        }, 1000);
-                        setSearchTimeId(timeId);
+                          const timeId = setTimeout(() => {
+                            setSearchBar({
+                              ...searchBar,
+                              animation: "searchresults2",
+                            });
+                          }, 1000);
+                          setSearchTimeId(timeId);
+                        }
                       }}
                       onBlur={() => {
                         // document.querySelectorAll("*").forEach((element) => {
@@ -621,17 +648,42 @@ const Home = () => {
                               search: "",
                             });
                             setTimeout(() => {
-                              setSearchBar({ ...searchBar, animation: "" });
+                              setSearchBar({ search: "", animation: "" });
                             }, 1000);
                           }}
                         />
                       </section>
                     )}
-                    {searchResults.length <= 0 && searchBar.search !== "" && (
-                      <h1 className="text-white text-5xl ml-52 mt-48">
-                        No Results Found
-                      </h1>
-                    )}
+                    {searchResults.length <= 0 &&
+                      searchBar.search !== "" &&
+                      searchBar.animation === "searchresults2" &&
+                      (noresults ? (
+                        <h1
+                          className="text-white absolute top-[50%] left-[50%]"
+                          style={{
+                            fontSize: "clamp(1rem,3.2vw,3rem)",
+                            transform: "translate(-50%,-50%)",
+                          }}
+                        >
+                          <MagnifyingGlass
+                            visible={true}
+                            height="80"
+                            width="80"
+                            glassColor="#ffffff"
+                            color="#9794ff"
+                          />
+                        </h1>
+                      ) : (
+                        <h1
+                          className="text-white absolute top-[50%] left-[50%]"
+                          style={{
+                            fontSize: "clamp(1rem,3.2vw,3rem)",
+                            transform: "translate(-50%,-50%)",
+                          }}
+                        >
+                          No Results Found
+                        </h1>
+                      ))}
                     {searchBar.animation === "searchresults2" &&
                     searchBar.search === "" ? (
                       <>
@@ -653,6 +705,7 @@ const Home = () => {
                                         ].trending.songs.map((each) => (
                                           <div
                                             onClick={() => {
+                                              setObtaindAlbum(null);
                                               setSearchBar({
                                                 ...searchBar,
                                                 animation: "searchresults3",
@@ -678,6 +731,7 @@ const Home = () => {
                                               <img
                                                 className="max-w-[100%]  block"
                                                 onClick={() => {
+                                                  setObtaindAlbum(null);
                                                   setSearchBar({
                                                     ...searchBar,
                                                     animation: "searchresults3",
@@ -706,6 +760,7 @@ const Home = () => {
                                               />
                                               <img
                                                 onClick={() => {
+                                                  setObtaindAlbum(null);
                                                   setSearchBar({
                                                     ...searchBar,
                                                     animation: "searchresults3",
@@ -733,6 +788,7 @@ const Home = () => {
 
                                             <p
                                               onClick={() => {
+                                                setObtaindAlbum(null);
                                                 setSearchBar({
                                                   ...searchBar,
                                                   animation: "searchresults3",
@@ -1279,6 +1335,7 @@ const Home = () => {
                                     {searchResults[0].songs.map((each) => (
                                       <div
                                         onClick={() => {
+                                          setObtaindAlbum(null);
                                           setSearchBar({
                                             search: "",
                                             animation: "searchresults3",
@@ -1301,6 +1358,7 @@ const Home = () => {
                                           <img
                                             className="max-w-[100%]  block"
                                             onClick={() => {
+                                              setObtaindAlbum(null);
                                               setSearchBar({
                                                 search: "",
                                                 animation: "searchresults3",
@@ -1320,12 +1378,13 @@ const Home = () => {
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
-                                                .link
+                                                .url
                                             }
                                             alt={each.title}
                                           />
                                           <img
                                             onClick={() => {
+                                              setObtaindAlbum(null);
                                               setSearchBar({
                                                 search: "",
                                                 animation: "searchresults3",
@@ -1350,6 +1409,7 @@ const Home = () => {
                                         </div>
                                         <p
                                           onClick={() => {
+                                            setObtaindAlbum(null);
                                             setSearchBar({
                                               search: "",
                                               animation: "searchresults3",
@@ -1419,7 +1479,7 @@ const Home = () => {
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
-                                                .link
+                                                .url
                                             }
                                             alt={each.title}
                                           />
@@ -1519,7 +1579,7 @@ const Home = () => {
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
-                                                .link
+                                                .url
                                             }
                                             alt={each.title}
                                           />
@@ -1625,7 +1685,7 @@ const Home = () => {
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
-                                                .link
+                                                .url
                                             }
                                             alt={each.title}
                                           />{" "}
@@ -1826,8 +1886,43 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].trending.songs.length >
                             0 && (
                             <>
-                              <h1>{Object.keys(ea).join(", ")}</h1>
-                              <div className="tiltcon">
+                              <h1>
+                                {Object.keys(ea).join(", ")}{" "}
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "left",
+                                      `trendingsongs${Object.keys(ea).join(
+                                        ", "
+                                      )}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❮
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "right",
+                                      `trendingsongs${Object.keys(ea).join(
+                                        ", "
+                                      )}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❯
+                                </button>
+                              </h1>
+                              <div
+                                id={`trendingsongs${Object.keys(ea).join(
+                                  ", "
+                                )}`}
+                                className="tiltcon"
+                              >
                                 {ea[
                                   Object.keys(ea).join(", ")
                                 ].trending.songs.map((each) => (
@@ -1953,8 +2048,43 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].trending.albums
                             .length > 0 && (
                             <>
-                              <h1>{Object.keys(ea).join(", ")}</h1>
-                              <div className="tiltcon">
+                              <h1>
+                                {Object.keys(ea).join(", ")}{" "}
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "left",
+                                      `trendingalbums${Object.keys(ea).join(
+                                        ", "
+                                      )}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❮
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "right",
+                                      `trendingalbums${Object.keys(ea).join(
+                                        ", "
+                                      )}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❯
+                                </button>
+                              </h1>
+                              <div
+                                id={`trendingalbums${Object.keys(ea).join(
+                                  ", "
+                                )}`}
+                                className="tiltcon"
+                              >
                                 {ea[
                                   Object.keys(ea).join(", ")
                                 ].trending.albums.map((each) => (
@@ -2055,8 +2185,37 @@ const Home = () => {
                         (ea) =>
                           ea[Object.keys(ea).join(", ")].albums.length > 0 && (
                             <>
-                              <h1>{Object.keys(ea).join(", ")}</h1>
-                              <div className="tiltcon">
+                              <h1>
+                                {Object.keys(ea).join(", ")}{" "}
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "left",
+                                      `otheralbums${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❮
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "right",
+                                      `otheralbums${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❯
+                                </button>
+                              </h1>
+                              <div
+                                id={`otheralbums${Object.keys(ea).join(", ")}`}
+                                className="tiltcon"
+                              >
                                 {ea[Object.keys(ea).join(", ")].albums.map(
                                   (each) => (
                                     <Tilt
@@ -2207,8 +2366,37 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].playlists.length >
                             0 && (
                             <>
-                              <h1>{Object.keys(ea).join(", ")}</h1>
-                              <div className="tiltcon">
+                              <h1>
+                                {Object.keys(ea).join(", ")}{" "}
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "left",
+                                      `playlists${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❮
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "right",
+                                      `playlists${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❯
+                                </button>
+                              </h1>
+                              <div
+                                id={`playlists${Object.keys(ea).join(", ")}`}
+                                className="tiltcon"
+                              >
                                 {ea[Object.keys(ea).join(", ")].playlists.map(
                                   (each) => (
                                     <Tilt
@@ -2326,8 +2514,37 @@ const Home = () => {
                         (ea) =>
                           ea[Object.keys(ea).join(", ")].charts.length > 0 && (
                             <>
-                              <h1>{Object.keys(ea).join(", ")}</h1>
-                              <div className="tiltcon">
+                              <h1>
+                                {Object.keys(ea).join(", ")}{" "}
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "left",
+                                      `topcharts${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❮
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    moveCarousel(
+                                      "right",
+                                      `topcharts${Object.keys(ea).join(", ")}`
+                                    );
+                                  }}
+                                  type="button"
+                                  className="text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                >
+                                  ❯
+                                </button>
+                              </h1>
+                              <div
+                                id={`topcharts${Object.keys(ea).join(", ")}`}
+                                className="tiltcon"
+                              >
                                 {ea[Object.keys(ea).join(", ")].charts.map(
                                   (each) => (
                                     <Tilt
