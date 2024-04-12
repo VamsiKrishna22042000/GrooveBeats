@@ -25,6 +25,13 @@ const Albums = ({
     const audiotag = document.querySelector(".album-header");
     audiotag.scrollIntoView({ behavior: "smooth" });
   }, []);
+  useEffect(() => {
+    if (obtainedAlbum.songCount === "0") {
+      setWhatToDisplay(displayingContent.home);
+    }
+  });
+
+  console.log(obtainedAlbum);
 
   return (
     obtainedAlbum && (
@@ -48,7 +55,12 @@ const Albums = ({
           </h1>
           <div id="allbum-image-con">
             <img
-              src={obtainedAlbum.image[obtainedAlbum.image.length - 1].link}
+              src={
+                obtainedAlbum.image[obtainedAlbum.image.length - 1].link ===
+                undefined
+                  ? obtainedAlbum.image[obtainedAlbum.image.length - 1].url
+                  : obtainedAlbum.image[obtainedAlbum.image.length - 1].link
+              }
               alt={obtainedAlbum.name}
             />
           </div>
@@ -116,7 +128,11 @@ const Albums = ({
                 onClick={() => {
                   playSelectedSong(each.id, obtainedAlbum.songs);
                 }}
-                src={each.image[each.image.length - 1].link}
+                src={
+                  each.image[each.image.length - 1].link === undefined
+                    ? each.image[each.image.length - 1].url
+                    : each.image[each.image.length - 1].link
+                }
                 alt={each.name}
               />
 
@@ -153,13 +169,14 @@ const Albums = ({
                   <FaRegHeart />
                 </button>
               )}
-              {each.duration.length > 2 ? (
+              {String(each.duration).length > 2 ? (
                 <p
                   onClick={() => {
                     playSelectedSong(each.id, obtainedAlbum.songs);
                   }}
                 >
-                  {each.duration[0]}&nbsp;:&nbsp;{each.duration.slice(1)}
+                  {String(each.duration)[0]}&nbsp;:&nbsp;
+                  {String(each.duration).slice(1)}
                 </p>
               ) : (
                 <p
@@ -167,7 +184,7 @@ const Albums = ({
                     playSelectedSong(each.id, obtainedAlbum.songs);
                   }}
                 >
-                  {0}&nbsp;:&nbsp;{each.duration}
+                  {0}&nbsp;:&nbsp;{String(each.duration)}
                 </p>
               )}
             </div>

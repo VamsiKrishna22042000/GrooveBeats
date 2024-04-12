@@ -188,6 +188,11 @@ input[type="search"]::-ms-clear {
     background-color: rgba(17, 25, 40, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.125);
   }
+  .mic-color {
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    color: rgb(107 113 126);
+  }
 
   .searchresults1 {
     backdrop-filter: blur(4px) saturate(180%);
@@ -472,11 +477,10 @@ input[type="search"]::-ms-clear {
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.125);
-    border: 2px solid red;
   }
 
   .selectedSongCon {
-    @apply relative w-[70%] flex max-h-[70%] flex-wrap overflow-x-hidden overflow-y-scroll rounded-lg self-center ml-[10%] mt-[2.5%];
+    @apply relative w-[70%] flex max-h-[60%] min-h-[30%] flex-wrap overflow-x-hidden overflow-y-scroll rounded-lg self-center ml-[10%] mt-[2.5%];
     backdrop-filter: blur(4px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);

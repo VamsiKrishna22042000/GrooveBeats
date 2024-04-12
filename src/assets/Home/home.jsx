@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, lazy } from "react";
 import "../../index.css";
 
 /**Component Imports */
-import Albums from "./Albums";
+const Albums = lazy(() => import("./Albums"));
 
 /**Dependencies*/
 import axios from "axios";
@@ -15,6 +15,11 @@ import { FaShuffle } from "react-icons/fa6";
 import { TiArrowLoop } from "react-icons/ti";
 import { HiSpeakerWave, HiMiniSpeakerXMark } from "react-icons/hi2";
 import { IoPlayBack, IoPlayForward } from "react-icons/io5";
+import { IoIosMic, IoIosMicOff } from "react-icons/io";
+
+/**Tilt */
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { RxCross2 } from "react-icons/rx";
 
@@ -26,6 +31,84 @@ const displayingContent = {
 };
 
 const Home = () => {
+  /**Speech Recognization */
+
+  const [listening, setListening] = useState(false);
+  let recognition = null;
+
+  const startRecognition = () => {
+    if (searchBar.animation === "searchresults2") {
+      setSearchBar({ ...searchBar, search: "" });
+    }
+
+    // const supportedLanguages = JSON.parse(localStorage.getItem("selectedlang"))
+    //   .map((language) => {
+    //     switch (language) {
+    //       case "english":
+    //         return "en-US";
+    //       case "telugu":
+    //         return "te-IN";
+    //       case "hindi":
+    //         return "hi-IN";
+    //       case "punjabi":
+    //         return "pa-IN"; // or any other variant you want to support
+    //       case "tamil":
+    //         return "ta-IN"; // or any other variant you want to support
+    //       case "marathi":
+    //         return "mr-IN"; // or any other variant you want to support
+    //       case "gujarati":
+    //         return "gu-IN"; // or any other variant you want to support
+    //       case "bengali":
+    //         return "bn-IN"; // or any other variant you want to support
+    //       case "kannada":
+    //         return "kn-IN"; // or any other variant you want to support
+    //       case "bhojpuri":
+    //         return "bh-IN"; // or any other variant you want to support
+    //       case "malayalam":
+    //         return "ml-IN"; // or any other variant you want to support
+    //       case "urdu":
+    //         return "ur-IN"; // or any other variant you want to support
+    //       case "haryanvi":
+    //         return "ha-IN"; // or any other variant you want to support
+    //       case "rajasthani":
+    //         return "ra-IN"; // or any other variant you want to support
+    //       case "odia":
+    //         return "or-IN"; // or any other variant you want to support
+    //       case "assamese":
+    //         return "as-IN"; // or any other variant you want to support
+    //       default:
+    //         return null;
+    //     }
+    //   })
+    //   .filter((lang) => lang !== null);
+
+    recognition = new window.webkitSpeechRecognition(); // Create SpeechRecognition instance
+    recognition.lang = "en-US"; // Set language
+    recognition.onstart = () => setListening(true); // Set listening state to true when recognition starts
+    recognition.onend = () => setListening(false); // Set listening state to false when recognition ends
+    recognition.onresult = (event) => {
+      const currentTranscript = event.results[0][0].transcript;
+      if (searchBar.animation !== "searchresults2") {
+        setSearchBar({ ...searchBar, animation: "searchresults1" });
+      }
+
+      setTimeout(() => {
+        setSearchBar({
+          animation: "searchresults2",
+          search: currentTranscript,
+        });
+      }, 1000);
+    };
+    recognition.start(); // Start recognition
+  };
+
+  const stopRecognition = () => {
+    if (recognition) {
+      recognition.stop(); // Stop recognition if it's in progress
+      setListening(false);
+    }
+  };
+
   const [selectedLanguages, setSelectedLanguages] = useState([]);
 
   const [allLanguageSongs, setAllLanguageSongs] = useState(() => {
@@ -56,6 +139,10 @@ const Home = () => {
   const [obtainedAlbum, setObtaindAlbum] = useState(() => {
     return null;
   });
+
+  const [playlisttoSearch, setPlaylistToSearch] = useState("");
+  const [artisttoSearch, setArtistToSearch] = useState("");
+
   const [whatToDisplay, setWhatToDisplay] = useState(displayingContent.home);
   const [load, setLoad] = useState(false);
 
@@ -70,6 +157,12 @@ const Home = () => {
   /**Observer Animation */
 
   useEffect(() => {
+    if (obtainedAlbum !== null) {
+      if (obtainedAlbum.songCount === "0") {
+        setObtaindAlbum(null);
+        toast("No Songs Available");
+      }
+    }
     const tiltCards = document.querySelectorAll(".tiltcon");
 
     const observer = new IntersectionObserver((entries) => {
@@ -160,6 +253,11 @@ const Home = () => {
       getAlbum();
     }
   }, [albumToSearch]);
+  useEffect(() => {
+    if (artisttoSearch !== "") {
+      getArtist();
+    }
+  }, [artisttoSearch]);
 
   const getTrendingSongs = async (songsArr) => {
     try {
@@ -180,6 +278,12 @@ const Home = () => {
       console.error("Error TrendingNow", error);
     }
   };
+
+  useEffect(() => {
+    if (playlisttoSearch !== "") {
+      getPlaylist();
+    }
+  }, [playlisttoSearch]);
 
   /**player currentTime and duration updater useEffect */
   useEffect(() => {
@@ -217,6 +321,44 @@ const Home = () => {
       const url = `${
         import.meta.env.VITE_ROOT_URL
       }/albums/?id=${albumToSearch}`;
+
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        setObtaindAlbum(res.data.data);
+        setWhatToDisplay(displayingContent.albums);
+        playSelectedSong(res.data.data.songs[0].id, res.data.data.songs);
+      }
+    } catch (error) {
+      setLoad(true);
+      console.error(`Error to Fetch Album`, error);
+    }
+  };
+
+  const getPlaylist = async () => {
+    setLoad(false);
+    try {
+      const url = `${
+        import.meta.env.VITE_UPDATE_URL
+      }/playlists?id=${playlisttoSearch}`;
+
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        setObtaindAlbum(res.data.data);
+        setWhatToDisplay(displayingContent.albums);
+        playSelectedSong(res.data.data.songs[0].id, res.data.data.songs);
+      }
+    } catch (error) {
+      setLoad(true);
+      console.error(`Error to Fetch Album`, error);
+    }
+  };
+
+  const getArtist = async () => {
+    setLoad(false);
+    try {
+      const url = `${
+        import.meta.env.VITE_UPDATE_URL
+      }/artists/${artisttoSearch}/songs`;
 
       const res = await axios.get(url);
       if (res.status === 200) {
@@ -394,6 +536,13 @@ const Home = () => {
       setSelectedHere([...selectedHere, ...selectedLanguages]);
     };
 
+    useEffect(() => {
+      if (allLanguages.length === 0) {
+        localStorage.setItem("selectedlang", JSON.stringify(selectedHere));
+        window.location.reload();
+      }
+    }, [allLanguages]);
+
     return (
       <>
         <div className="selectedBackGround">
@@ -408,15 +557,15 @@ const Home = () => {
                 }}
                 key={each.backgroundColor}
                 style={{ backgroundColor: `${each.backgroundColor}` }}
-                className="text-center p-[1%] w-[15%] m-[5%] rounded-lg cursor-pointer active:scale-75 transition-all duration-300 "
+                className="text-center p-[2%] w-[15%] m-[5%] rounded-lg cursor-pointer active:scale-75 transition-all duration-300"
               >
                 <p
                   className="capitalize  font-[500]"
-                  style={{ fontSize: "clamp(.6rem,1.3vw,1rem)" }}
+                  style={{ fontSize: "clamp(.6rem,1.3vw,2rem)" }}
                 >
                   {each.language}
                 </p>
-                <h1 style={{ fontSize: "clamp(.6rem,1.3vw,1rem)" }}>
+                <h1 style={{ fontSize: "clamp(.6rem,1.3vw,2rem)" }}>
                   {each.letter}
                 </h1>
               </div>
@@ -437,7 +586,7 @@ const Home = () => {
                 ? { fontSize: "clamp(.6rem,1.3vw,1rem)", alignSelf: "end" }
                 : { visibility: "hidden" }
             }
-            className="text-black mt-[1%] mb-[2%] font-semibold text-md  bottom-8 bg-white px-5 py-2 rounded-lg mr-[10%]  active:scale-90 transition-all duration-300 "
+            className="text-black mt-[2%] mb-[2%] font-semibold text-md  bottom-8 bg-white px-5 py-2 rounded-lg mr-[10%]  active:scale-90 transition-all duration-300 "
           >
             Submit
           </button>
@@ -471,6 +620,19 @@ const Home = () => {
 
   return (
     <>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        style={{ color: "#9794ff", textAlign: "center" }}
+      />
       <audio ref={audioref} id="audiotag" type="audio/mp3" />
       <div className="home-con">
         <div className="home-sidebar">
@@ -592,7 +754,7 @@ const Home = () => {
                       className="searchbar"
                       type="search"
                       value={searchBar.search}
-                      placeholder="Search"
+                      placeholder={listening ? "listening . . ." : "Search"}
                       onChange={(e) => {
                         setSearchBar({ ...searchBar, search: e.target.value });
                       }}
@@ -628,6 +790,17 @@ const Home = () => {
                         // }, 1000);
                       }}
                     />
+                    {listening ? (
+                      <IoIosMicOff
+                        onClick={stopRecognition}
+                        className="text-xl mic-color absolute bottom-2 left-1 cursor-pointer"
+                      />
+                    ) : (
+                      <IoIosMic
+                        onClick={startRecognition}
+                        className="text-xl mic-color absolute bottom-2 left-1 cursor-pointer"
+                      />
+                    )}
                     {searchBar.search !== "" && (
                       <RxCross2
                         className="cross cursor-pointer text-white mt-[-2%]"
@@ -1122,10 +1295,17 @@ const Home = () => {
                                                   animation: "",
                                                 });
                                               }, 1000);
-                                              // const songsArr =
-                                              //   ea[Object.keys(ea).join(", ")]
-                                              //     .trending.albums;
-                                              // playSelectedSong(each.id, songsArr);
+                                              const songsArr =
+                                                ea[Object.keys(ea).join(", ")]
+                                                  .trending.albums;
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }
                                             }}
                                             className="songs-search"
                                             key={each.id}
@@ -1144,10 +1324,24 @@ const Home = () => {
                                                       animation: "",
                                                     });
                                                   }, 1000);
-                                                  // const songsArr =
-                                                  //   ea[Object.keys(ea).join(", ")]
-                                                  //     .trending.songs;
-                                                  // playSelectedSong(each.id, songsArr);
+                                                  const songsArr =
+                                                    ea[
+                                                      Object.keys(ea).join(", ")
+                                                    ].trending.songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
                                                 }}
                                                 src={
                                                   each.image[
@@ -1168,10 +1362,24 @@ const Home = () => {
                                                       animation: "",
                                                     });
                                                   }, 1000);
-                                                  // const songsArr =
-                                                  //   ea[Object.keys(ea).join(", ")]
-                                                  //     .trending.songs;
-                                                  // playSelectedSong(each.id, songsArr);
+                                                  const songsArr =
+                                                    ea[
+                                                      Object.keys(ea).join(", ")
+                                                    ].trending.songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
                                                 }}
                                                 id="songs-logo-search"
                                                 src="/logo.webp"
@@ -1190,10 +1398,19 @@ const Home = () => {
                                                     animation: "",
                                                   });
                                                 }, 1000);
-                                                // const songsArr =
-                                                //   ea[Object.keys(ea).join(", ")]
-                                                //     .trending.songs;
-                                                // playSelectedSong(each.id, songsArr);
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .trending.songs;
+                                                if (each.type === "playlist") {
+                                                  setPlaylistToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }
                                               }}
                                               style={{ cursor: "pointer" }}
                                             >
@@ -1235,10 +1452,17 @@ const Home = () => {
                                                   animation: "",
                                                 });
                                               }, 1000);
-                                              // const songsArr =
-                                              //   ea[Object.keys(ea).join(", ")]
-                                              //     .trending.albums;
-                                              // playSelectedSong(each.id, songsArr);
+                                              const songsArr =
+                                                ea[Object.keys(ea).join(", ")]
+                                                  .trending.albums;
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }
                                             }}
                                             className="songs-search"
                                             key={each.id}
@@ -1257,10 +1481,24 @@ const Home = () => {
                                                       animation: "",
                                                     });
                                                   }, 1000);
-                                                  // const songsArr =
-                                                  //   ea[Object.keys(ea).join(", ")]
-                                                  //     .trending.songs;
-                                                  // playSelectedSong(each.id, songsArr);
+                                                  const songsArr =
+                                                    ea[
+                                                      Object.keys(ea).join(", ")
+                                                    ].trending.songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
                                                 }}
                                                 src={
                                                   each.image[
@@ -1281,10 +1519,24 @@ const Home = () => {
                                                       animation: "",
                                                     });
                                                   }, 1000);
-                                                  // const songsArr =
-                                                  //   ea[Object.keys(ea).join(", ")]
-                                                  //     .trending.songs;
-                                                  // playSelectedSong(each.id, songsArr);
+                                                  const songsArr =
+                                                    ea[
+                                                      Object.keys(ea).join(", ")
+                                                    ].trending.songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
                                                 }}
                                                 id="songs-logo-search"
                                                 src="/logo.webp"
@@ -1303,10 +1555,19 @@ const Home = () => {
                                                     animation: "",
                                                   });
                                                 }, 1000);
-                                                // const songsArr =
-                                                //   ea[Object.keys(ea).join(", ")]
-                                                //     .trending.songs;
-                                                // playSelectedSong(each.id, songsArr);
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .trending.songs;
+                                                if (each.type === "playlist") {
+                                                  setPlaylistToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }
                                               }}
                                               style={{ cursor: "pointer" }}
                                             >
@@ -1551,7 +1812,11 @@ const Home = () => {
                                           const songsArr =
                                             searchResults[0].songs;
 
-                                          playSelectedSong(each.id, songsArr);
+                                          if (each.type === "playlist") {
+                                            setPlaylistToSearch(each.id);
+                                          } else if (each.type === "song") {
+                                            playSelectedSong(each.id, songsArr);
+                                          }
                                         }}
                                         className="songs-search"
                                         key={each.id}
@@ -1572,10 +1837,14 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
@@ -1597,10 +1866,14 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }
                                             }}
                                             id="songs-logo-search"
                                             src="/logo.webp"
@@ -1622,7 +1895,14 @@ const Home = () => {
 
                                             const songsArr =
                                               searchResults[0].songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            }
                                           }}
                                           style={{ cursor: "pointer" }}
                                         >
@@ -1657,7 +1937,13 @@ const Home = () => {
                                           const songsArr =
                                             searchResults[0].songs;
 
-                                          playSelectedSong(each.id, songsArr);
+                                          if (each.type === "playlist") {
+                                            setPlaylistToSearch(each.id);
+                                          } else if (each.type === "song") {
+                                            playSelectedSong(each.id, songsArr);
+                                          } else if (each.type === "artist") {
+                                            setArtistToSearch(each.id);
+                                          }
                                         }}
                                         className="songs-search"
                                         key={each.id}
@@ -1678,10 +1964,18 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              } else if (
+                                                each.type === "artist"
+                                              ) {
+                                                setArtistToSearch(each.id);
+                                              }
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
@@ -1703,10 +1997,18 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "playlist") {
+                                                setPlaylistToSearch(each.id);
+                                              } else if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              } else if (
+                                                each.type === "artist"
+                                              ) {
+                                                setArtistToSearch(each.id);
+                                              }
                                             }}
                                             id="songs-logo-search"
                                             src="/logo.webp"
@@ -1728,7 +2030,16 @@ const Home = () => {
 
                                             const songsArr =
                                               searchResults[0].songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            } else if (each.type === "artist") {
+                                              setArtistToSearch(each.id);
+                                            }
                                           }}
                                           style={{ cursor: "pointer" }}
                                         >
@@ -1763,7 +2074,11 @@ const Home = () => {
                                           const songsArr =
                                             searchResults[0].songs;
 
-                                          playSelectedSong(each.id, songsArr);
+                                          if (each.type === "song") {
+                                            playSelectedSong(each.id, songsArr);
+                                          } else if (each.type === "artist") {
+                                            setArtistToSearch(each.id);
+                                          }
                                         }}
                                         className="songs-search"
                                         key={each.id}
@@ -1784,14 +2099,20 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              } else if (
+                                                each.type === "artist"
+                                              ) {
+                                                setArtistToSearch(each.id);
+                                              }
                                             }}
                                             src={
                                               each.image[each.image.length - 1]
-                                                .link
+                                                .url
                                             }
                                             alt={each.title}
                                           />{" "}
@@ -1809,10 +2130,16 @@ const Home = () => {
                                               }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
+                                              if (each.type === "song") {
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              } else if (
+                                                each.type === "artist"
+                                              ) {
+                                                setArtistToSearch(each.id);
+                                              }
                                             }}
                                             id="songs-logo-search"
                                             src="/logo.webp"
@@ -1834,7 +2161,14 @@ const Home = () => {
 
                                             const songsArr =
                                               searchResults[0].songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            } else if (each.type === "artist") {
+                                              setArtistToSearch(each.id);
+                                            }
                                           }}
                                           style={{ cursor: "pointer" }}
                                         >
@@ -2404,7 +2738,12 @@ const Home = () => {
                                         const songsArr =
                                           ea[Object.keys(ea).join(", ")]
                                             .trending.songs;
-                                        playSelectedSong(each.id, songsArr);
+
+                                        if (each.type === "playlist") {
+                                          setPlaylistToSearch(each.id);
+                                        } else if (each.type === "song") {
+                                          playSelectedSong(each.id, songsArr);
+                                        }
                                       }}
                                       className="songs"
                                       key={each.id}
@@ -2415,7 +2754,14 @@ const Home = () => {
                                             const songsArr =
                                               ea[Object.keys(ea).join(", ")]
                                                 .trending.songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            }
                                           }}
                                           className="songs-logo"
                                           src="/logo.webp"
@@ -2428,7 +2774,14 @@ const Home = () => {
                                             const songsArr =
                                               ea[Object.keys(ea).join(", ")]
                                                 .trending.songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            }
                                           }}
                                           src={
                                             each.image[each.image.length - 1]
@@ -2442,7 +2795,11 @@ const Home = () => {
                                           const songsArr =
                                             ea[Object.keys(ea).join(", ")]
                                               .trending.songs;
-                                          playSelectedSong(each.id, songsArr);
+                                          if (each.type === "playlist") {
+                                            setPlaylistToSearch(each.id);
+                                          } else if (each.type === "song") {
+                                            playSelectedSong(each.id, songsArr);
+                                          }
                                         }}
                                         style={{ cursor: "pointer" }}
                                       >
@@ -2552,7 +2909,11 @@ const Home = () => {
                                         const songsArr =
                                           ea[Object.keys(ea).join(", ")]
                                             .trending.songs;
-                                        playSelectedSong(each.id, songsArr);
+                                        if (each.type === "playlist") {
+                                          setPlaylistToSearch(each.id);
+                                        } else if (each.type === "song") {
+                                          playSelectedSong(each.id, songsArr);
+                                        }
                                       }}
                                       className="songs"
                                       key={each.id}
@@ -2563,7 +2924,14 @@ const Home = () => {
                                             const songsArr =
                                               ea[Object.keys(ea).join(", ")]
                                                 .trending.songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            }
                                           }}
                                           className="songs-logo"
                                           src="/logo.webp"
@@ -2576,7 +2944,14 @@ const Home = () => {
                                             const songsArr =
                                               ea[Object.keys(ea).join(", ")]
                                                 .trending.songs;
-                                            playSelectedSong(each.id, songsArr);
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            }
                                           }}
                                           src={
                                             each.image[each.image.length - 1]
@@ -2590,7 +2965,11 @@ const Home = () => {
                                           const songsArr =
                                             ea[Object.keys(ea).join(", ")]
                                               .trending.songs;
-                                          playSelectedSong(each.id, songsArr);
+                                          if (each.type === "playlist") {
+                                            setPlaylistToSearch(each.id);
+                                          } else if (each.type === "song") {
+                                            playSelectedSong(each.id, songsArr);
+                                          }
                                         }}
                                         style={{ cursor: "pointer" }}
                                       >
@@ -2657,6 +3036,7 @@ const Home = () => {
                       playSelectedSong={playSelectedSong}
                       setPlaySong={setPlaySong}
                       playSong={playSong}
+                      setObtaindAlbum={setObtaindAlbum}
                     />
                   )
                 )}
