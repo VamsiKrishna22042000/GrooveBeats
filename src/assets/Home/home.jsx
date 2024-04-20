@@ -802,17 +802,17 @@ const Home = () => {
                     {listening ? (
                       <IoIosMicOff
                         onClick={stopRecognition}
-                        className="text-xl mic-color absolute bottom-2 left-1 cursor-pointer"
+                        className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer"
                       />
                     ) : (
                       <IoIosMic
                         onClick={startRecognition}
-                        className="text-xl mic-color absolute bottom-2 left-1 cursor-pointer"
+                        className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer"
                       />
                     )}
                     {searchBar.search !== "" && (
                       <RxCross2
-                        className="cross cursor-pointer text-white mt-[-2%]"
+                        className="cross cursor-pointer text-white mt-[-0.3%]"
                         onClick={() => {
                           setSearchBar({ ...searchBar, search: "" });
                         }}
@@ -2339,7 +2339,7 @@ const Home = () => {
 
                 {whatToDisplay === displayingContent.home ? (
                   <>
-                    {obtainedAlbum !== null && (
+                    {obtainedAlbum !== null && selectedComponent === "home" && (
                       <img
                         onClick={() => {
                           setWhatToDisplay(
@@ -2348,7 +2348,7 @@ const Home = () => {
                               : displayingContent.albums
                           );
                         }}
-                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[600px]:w-10 max-[600px]:h-10 max-[600px]:top-[70%] max-[600px]:right-3"
+                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[600px]:w-12 max-[600px]:h-12 max-[600px]:top-[93.15%] max-[600px]:right-[79.3%] max-[600px]:animate-none"
                         src={
                           obtainedAlbum.image[obtainedAlbum.image.length - 1]
                             .link === undefined
@@ -3448,10 +3448,10 @@ const Home = () => {
                         : selectedComponent === "playlist"
                         ? { left: "32%" }
                         : selectedComponent === "fav"
-                        ? { left: "56%" }
+                        ? { left: "56.2%" }
                         : { left: "79.8%" }
                     }
-                    className="selectedcomponent mt-[4.5%]"
+                    className="selectedcomponent mt-[4.5%] mb-[2%]"
                   ></div>
                   <MdHomeFilled
                     onClick={() => {
@@ -3459,7 +3459,7 @@ const Home = () => {
                     }}
                     fontSize={"1.9rem"}
                     color="#9794ff"
-                    className="mb-[1%] mt-[5%]"
+                    className="mb-[3%] mt-[5%]"
                   />
                   <BiSolidPlaylist
                     onClick={() => {
@@ -3467,7 +3467,7 @@ const Home = () => {
                     }}
                     fontSize={"1.75rem"}
                     color="#9794ff"
-                    className="mt-[5%]"
+                    className="mt-[5%] mb-[2%]"
                   />
                   <TiHeartFullOutline
                     onClick={() => {
@@ -3475,7 +3475,7 @@ const Home = () => {
                     }}
                     fontSize={"1.9rem"}
                     color="#9794ff"
-                    className="mb-[-1%] mt-[5%]"
+                    className="mb-[1%] mt-[5%]"
                   />
                   <RxCountdownTimer
                     onClick={() => {
@@ -3483,7 +3483,7 @@ const Home = () => {
                     }}
                     fontSize={"1.6rem"}
                     color="#9794ff"
-                    className="mt-[5%]"
+                    className="mt-[5%] mb-[2%]"
                   />
                 </div>
               </>
