@@ -57,6 +57,18 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer; /* Set cursor style */
 }
 
+@media screen and (max-width: 434px) {
+  #dragger[type="range"] {
+    position: absolute;
+    top: 95%;
+  }
+  #dragger[type="range"]::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+    margin-top: 0.5%;
+  }
+}
+
 #timerhover {
   position: absolute;
   background-color: #9794ff;
@@ -73,7 +85,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: clamp(0.5rem, 1.2rem, 0.8rem);
   color: #ffffff;
   top: 45%;
-  right: 0.7%;
+  right: 2.5%;
   position: absolute;
 }
 
@@ -245,7 +257,7 @@ input[type="search"]::-ms-clear {
     overflow-y: scroll;
   }
   .songs-search {
-    @apply w-[80%] my-2  text-white py-3 px-5 flex justify-start items-center rounded-md cursor-pointer relative;
+    @apply w-[80%] my-2  text-white py-3 px-5 flex justify-start items-center rounded-md cursor-pointer relative max-[434px]:py-2 max-[434px]:px-2 max-[434px]:w-full;
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
@@ -263,7 +275,7 @@ input[type="search"]::-ms-clear {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.6rem, 1.2vw, 1rem);
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
     max-width: 60%;
   }
 }
@@ -279,8 +291,27 @@ input[type="search"]::-ms-clear {
 /**Home Component**/
 
 @layer base {
+  .skeleton {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    @apply p-[40%] animate-pulse;
+  }
+  .skeleton2 {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    @apply p-2 animate-pulse;
+  }
+
   .home-sidebar {
-    @apply w-[15%] border-solid border-2 border-[#9794FF] p-2 border-l-0 border-t-0 border-b-0;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 2px solid #9794ff;
+    @apply w-[15%] border-solid  p-2 border-l-0 border-t-0 border-b-0;
   }
 
   .home-sidebar > div {
@@ -288,7 +319,7 @@ input[type="search"]::-ms-clear {
   }
 
   .logoimage-con {
-    @apply w-[25%];
+    @apply w-[70%];
   }
 
   .logoimage-con > img {
@@ -306,7 +337,7 @@ input[type="search"]::-ms-clear {
   }
 
   .home-page {
-    @apply h-full w-[85%] border-solid  overflow-x-hidden overflow-y-scroll relative pb-[10%];
+    @apply h-full w-[85%] border-solid  overflow-x-hidden overflow-y-scroll relative pb-[7%] max-[434px]:pb-[40%];
     background-image: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.7),
@@ -349,6 +380,7 @@ input[type="search"]::-ms-clear {
     cursor: pointer;
     min-width: 20%;
     max-width: 20%;
+    @apply max-[434px]:min-w-[42%] max-w-[42%] mx-[2%];
   }
 
   .fade-in {
@@ -368,6 +400,24 @@ input[type="search"]::-ms-clear {
 
   .songs-logo-con {
     @apply w-[15%]  absolute top-[5%] left-[5%];
+  }
+
+  @media screen and (min-width: 745px) and (max-width: 1204px) {
+    .songs {
+      min-width: 25%;
+    }
+    #player {
+      margin-bottom: 0%;
+    }
+  }
+
+  @media screen and (max-width: 434px) {
+    .songs-logo-con {
+      position: absolute;
+      top: 8%;
+      left: 9%;
+      width: 15%;
+    }
   }
 
   .songs-logo-con > img {
@@ -406,7 +456,7 @@ input[type="search"]::-ms-clear {
   }
 
   #player {
-    @apply w-[85%] bottom-0 fixed flex flex-row justify-start items-center;
+    @apply w-[85%] bottom-0 fixed flex flex-row justify-start items-center max-[434px]:w-[100%];
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
@@ -417,7 +467,13 @@ input[type="search"]::-ms-clear {
   .playerimage {
     width: 6.5%;
     margin: 1% 0%;
-    @apply cursor-pointer;
+    @apply cursor-pointer max-[434px]:w-[15%] max-[434px]:mt-[4%]  max-[434px]:mb-[3%];
+  }
+
+  @media screen and (min-width: 434px) and (max-width: 745px) {
+    .playerimage {
+      width: 8.5%;
+    }
   }
 
   .playerimage > img {
@@ -428,15 +484,43 @@ input[type="search"]::-ms-clear {
     @apply ml-5;
   }
 
-  #player > div > h4 {
-    @apply text-white  font-semibold m-0  max-h-8  text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer;
+  #player > div > marquee {
+    @apply text-white  font-semibold m-0 max-h-8 text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer;
     width: 20vw;
-    font-size: clamp(0.6rem, 1.5vw, 1.2rem);
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
   }
+
+  @media screen and (max-width: 434px) {
+    #player > div > marquee {
+      width: 38vw;
+    }
+    #player > div > p {
+      width: 38vw;
+    }
+    #player {
+      @apply rounded-tl-xl rounded-tr-xl z-10 mb-[17%];
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    #player {
+      @apply w-full;
+    }
+  }
+
   #player > div > p {
     @apply text-white   max-h-8 text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer;
     width: 20vw;
-    font-size: clamp(0.4rem, 1vw, 0.9rem);
+    font-size: clamp(0.7rem, 1vw, 0.9rem);
+  }
+
+  @media screen and (max-width: 434px) {
+    #player > div > h4 {
+      width: 43vw;
+    }
+    #player > div > p {
+      width: 43vw;
+    }
   }
 
   .player-box {
@@ -492,27 +576,66 @@ input[type="search"]::-ms-clear {
 
 @layer base {
   .album-header {
-    @apply w-full text-white p-3 flex justify-start items-center relative;
+    @apply w-full text-white p-3 flex justify-start items-start relative max-[434px]:flex-col;
   }
 
   #allbum-image-con {
-    @apply w-[25%] ml-[10%] mr-[5%];
+    @apply w-[25%] ml-[10%] mr-[5%] max-[434px]:w-[85%] max-[434px]:ml-0 max-[434px]:mr-0 max-[434px]:mb-[-2%];
   }
 
   #allbum-image-con > img {
-    @apply max-w-[100%] block rounded-md;
+    @apply max-w-[100%] block rounded-md mt-[10%];
   }
 
   .album-header > div > h1 {
     @apply mb-[3%] mt-[5%];
-    font-size: clamp(1.5rem, 3.2vw, 3rem);
+    font-size: clamp(0.9rem, 2.8vw, 2.5rem);
   }
   .album-header > div > h4 {
     @apply ml-[2%] mb-[5%] w-[100%];
     font-size: clamp(0.5rem, 1.1vw, 1rem);
   }
   .album-details {
-    @apply w-[40%];
+    @apply w-[40%] max-[434px]:w-[85%];
+  }
+
+  @media screen and (max-width: 434px) {
+    .album-header {
+      @apply items-center p-5;
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(17, 25, 40, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+    .album-header > div > h1 {
+      font-size: clamp(2rem, 4vw, 3.8rem) !important;
+      @apply text-center mt-[10%];
+      line-height: 1.1;
+    }
+
+    .album-header > div > h4 {
+      @apply hidden;
+    }
+
+    #allbum-image-con > img {
+      @apply mt-[0%];
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    .album-header {
+      margin-top: -8%;
+    }
+    #allbum-image-con {
+      width: 35%;
+    }
+    .album-header > div > h1 {
+      font-size: clamp(2.5rem, 4.2vw, 4rem);
+    }
+    .album-header > div > h4 {
+      @apply ml-[2%] mb-[5%] w-[100%];
+      font-size: clamp(1rem, 2.1vw, 2rem);
+    }
   }
 
   .album-details > div {
@@ -523,8 +646,9 @@ input[type="search"]::-ms-clear {
     @apply text-black py-[5.5%] ml-[2%] rounded-[50%] flex justify-center items-center px-[6%];
     background-color: var(--def-color);
     color: #3a3a4b;
-    font-size: clamp(0.7rem, 2.2vw, 2rem);
+    font-size: clamp(1.2rem, 2.2vw, 2rem);
   }
+
   .album-details > div > button:last-child {
     @apply bg-transparent;
   }
@@ -565,7 +689,7 @@ input[type="search"]::-ms-clear {
     font-size: clamp(0.7rem, 1.4vw, 1.25rem); /* Equivalent to text-2xl */
     margin-left: 1.25rem; /* Equivalent to ml-5 */
     margin-right: 2.5rem; /* Equivalent to mr-10 */
-    width: 35%; /* Equivalent to w-[20rem] */
+    width: 50%; /* Equivalent to w-[20rem] */
     text-overflow: ellipsis;
     white-space: nowrap; /* Adjusted to nowrap for ellipsis to work */
     overflow: hidden;
@@ -594,5 +718,81 @@ input[type="search"]::-ms-clear {
   }
   .album-songs > div button {
     @apply mr-[-10%] ml-[10%];
+  }
+
+  @media screen and (max-width: 434px) {
+    .album-details > div {
+      @apply justify-center mb-[5%];
+    }
+
+    .album-details > div > button {
+      font-size: clamp(2rem, 3vw, 2.8vw);
+      margin-top: 5%;
+    }
+
+    .album-songs {
+      @apply w-full ml-0;
+    }
+
+    .album-songs > div {
+      @apply rounded-none m-0 border-0 border-transparent;
+    }
+
+    .album-songs > div > img {
+      @apply w-[15%];
+    }
+
+    .album-songs > div h3 {
+      margin: 0;
+      width: 70%;
+      font-size: clamp(1rem, 3vw, 2.8rem);
+    }
+
+    .album-songs > div p {
+      display: none;
+    }
+    .album-songs > div p:last-child {
+      margin: 0;
+      display: inline;
+      margin-right: 5%;
+    }
+  }
+}
+
+/*drawer*/
+
+@layer base {
+  .drawer {
+    display: none; /* hidden */
+  }
+
+  @media screen and (max-width: 434px) {
+    .drawer {
+      width: 100%;
+      position: fixed;
+      display: flex; /* flex */
+      justify-content: space-around;
+      align-items: center;
+      bottom: 0; /* bottom-0 */
+      padding: 0.5rem; /* p-2 */
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(17, 25, 40, 0.75);
+      z-index: 0;
+      border-color: rgba(17, 25, 40, 0.75);
+      padding-bottom: 0.7rem;
+    }
+    .drawer > svg {
+      z-index: 1;
+    }
+    .selectedcomponent {
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: #9794ff15;
+      z-index: 0;
+      border: 2px solid rgba(255, 255, 255, 0.331);
+      transition: all linear 0.3s;
+      @apply absolute p-[5.8%] rounded-3xl overflow-hidden z-0 animate-pulse;
+    }
   }
 }

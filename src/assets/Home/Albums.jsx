@@ -31,8 +31,6 @@ const Albums = ({
     }
   });
 
-  console.log(obtainedAlbum);
-
   return (
     obtainedAlbum && (
       <>
@@ -41,9 +39,9 @@ const Albums = ({
             onClick={() => {
               setWhatToDisplay(displayingContent.home);
             }}
-            className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%] "
+            className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%]  max-[434px]:right-[90%] max-[434px]:top-[5%]"
             style={{
-              fontSize: "clamp(.7rem,2.2vw, 2rem)",
+              fontSize: "clamp(1rem,2.2vw, 2rem)",
               backdropFilter: "blur(16px) saturate(180%)",
               WebkitBackdropFilter: "blur(16px) saturate(180%)",
               backgroundColor: "rgba(17, 25, 40, 0.75)",
@@ -66,15 +64,37 @@ const Albums = ({
           </div>
 
           <div className="album-details">
-            <h1>{obtainedAlbum.name}</h1>
-            <h4>
-              Release Data &nbsp;:&nbsp; {obtainedAlbum.releaseDate}
-              &nbsp;&nbsp; No of Songs &nbsp;: &nbsp;
-              {obtainedAlbum.songCount}
-            </h4>
-            <h4>
-              Primary Artist &nbsp;: &nbsp; {obtainedAlbum.primaryArtists}
-            </h4>
+            <h1 className="max-w-[100%] max-h-[16%] text-ellipsis overflow-hidden">
+              {obtainedAlbum.name || obtainedAlbum.title}
+            </h1>
+            {obtainedAlbum.releaseDate === undefined ? (
+              <>
+                <h4>
+                  Description &nbsp;:&nbsp; {obtainedAlbum.description}
+                  &nbsp;&nbsp;
+                </h4>
+                <h4>
+                  No of Songs &nbsp;: &nbsp;
+                  {obtainedAlbum.songCount || obtainedAlbum.total}
+                </h4>
+              </>
+            ) : (
+              <>
+                <h4>
+                  Release Data &nbsp;:&nbsp; {obtainedAlbum.releaseDate}
+                  &nbsp;&nbsp;
+                </h4>
+                <h4>
+                  No of Songs &nbsp;: &nbsp;
+                  {obtainedAlbum.songCount || obtainedAlbum.total}
+                </h4>
+              </>
+            )}
+            {obtainedAlbum.primaryArtists !== undefined && (
+              <h4>
+                Primary Artist &nbsp;: &nbsp; {obtainedAlbum.primaryArtists}
+              </h4>
+            )}
             <div>
               {playSong ? (
                 <button
@@ -143,13 +163,17 @@ const Albums = ({
               >
                 {each.name}
               </h3>
-              <p
-                onClick={() => {
-                  playSelectedSong(each.id, obtainedAlbum.songs);
-                }}
-              >
-                {each.primaryArtists}
-              </p>
+              {
+                <p
+                  onClick={() => {
+                    playSelectedSong(each.id, obtainedAlbum.songs);
+                  }}
+                >
+                  {each.primaryArtists === undefined
+                    ? each.artists.primary.map((e) => e.name)[0]
+                    : each.primaryArtists}
+                </p>
+              }
               {fav ? (
                 <button
                   onClick={() => {
