@@ -39,7 +39,7 @@ const Albums = ({
             onClick={() => {
               setWhatToDisplay(displayingContent.home);
             }}
-            className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%]  max-[434px]:right-[90%] max-[434px]:top-[5%]"
+            className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%]  max-[600px]:right-[90%] max-[600px]:top-[5%]"
             style={{
               fontSize: "clamp(1rem,2.2vw, 2rem)",
               backdropFilter: "blur(16px) saturate(180%)",

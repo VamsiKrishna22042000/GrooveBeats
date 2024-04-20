@@ -638,7 +638,7 @@ const Home = () => {
       />
       <audio ref={audioref} id="audiotag" type="audio/mp3" />
       <div className="home-con">
-        <div className="home-sidebar max-[434px]:hidden max-[1024px]:hidden">
+        <div className="home-sidebar max-[600px]:hidden max-[1024px]:hidden">
           <div>
             <div className="logoimage-con">
               <img src="/logo.webp" alt="logo" />
@@ -723,7 +723,7 @@ const Home = () => {
         {localStorage.getItem("selectedlang") === null ? (
           <SelectLanguages />
         ) : (
-          <div className="home-page max-[434px]:min-w-full max-[1024px]:min-w-full">
+          <div className="home-page max-[600px]:min-w-full max-[1024px]:min-w-full">
             {allLanguageSongs.length === 0 ? (
               <div className="h-[20vh] w-[10vw] absolute left-[40%] top-[40%] z-50">
                 <img
@@ -753,7 +753,7 @@ const Home = () => {
                   <div
                     className={
                       whatToDisplay !== displayingContent.home
-                        ? "searchbox max-[434px]:hidden"
+                        ? "searchbox max-[600px]:hidden"
                         : "searchbox"
                     }
                   >
@@ -822,7 +822,7 @@ const Home = () => {
 
                   <div className={searchBar.animation}>
                     {searchBar.animation === "searchresults2" && (
-                      <section className="fixed z-30 top-[10%] right-[5%] cursor-pointer z-10 active:scale-90 hover:scale-125 transition-all max-[434px]:top-[3%] max-[1024px]:top-[3%]">
+                      <section className="fixed z-30 top-[10%] right-[5%] cursor-pointer z-10 active:scale-90 hover:scale-125 transition-all max-[600px]:top-[3%] max-[1024px]:top-[3%]">
                         <RxCross2
                           className="text-white"
                           onClick={() => {
@@ -870,7 +870,7 @@ const Home = () => {
                     {searchBar.animation === "searchresults2" &&
                     searchBar.search === "" ? (
                       <>
-                        <div className="search-re max-[434px]:w-[100%!important]">
+                        <div className="search-re max-[600px]:w-[100%!important]">
                           <h5 className="search-re">Trending Songs</h5>
                           <div>
                             {allLanguageSongs.length !== undefined &&
@@ -1015,7 +1015,7 @@ const Home = () => {
                               )}
                           </div>
                         </div>
-                        <div className=" max-[434px]:w-[100%!important]">
+                        <div className=" max-[600px]:w-[100%!important]">
                           <h5>Trending Albums</h5>
                           <div>
                             {allLanguageSongs.length !== undefined &&
@@ -1126,7 +1126,7 @@ const Home = () => {
                               )}
                           </div>
                         </div>
-                        <div className=" max-[434px]:w-[100%!important]">
+                        <div className=" max-[600px]:w-[100%!important]">
                           <h5>Other Albums</h5>
                           <div>
                             {allLanguageSongs.length !== undefined &&
@@ -1292,7 +1292,7 @@ const Home = () => {
                               )}
                           </div>
                         </div>
-                        <div className=" max-[434px]:w-[100%!important]">
+                        <div className=" max-[600px]:w-[100%!important]">
                           <h5>Playlists</h5>
                           <div>
                             {allLanguageSongs.length !== undefined &&
@@ -1465,7 +1465,7 @@ const Home = () => {
                               )}
                           </div>
                         </div>
-                        <div className=" max-[434px]:w-[100%!important]">
+                        <div className=" max-[600px]:w-[100%!important]">
                           <h5>Top Charts</h5>
                           <div>
                             {allLanguageSongs.length !== undefined &&
@@ -1643,7 +1643,7 @@ const Home = () => {
                       searchResults.length > 0 && (
                         <>
                           {searchResults[0].songs.length > 0 && (
-                            <div className=" max-[434px]:w-[100%!important]">
+                            <div className=" max-[600px]:w-[100%!important]">
                               <h5>Songs</h5>
                               <div>
                                 {searchResults.length !== undefined && (
@@ -1768,7 +1768,7 @@ const Home = () => {
                             </div>
                           )}
                           {searchResults[1].albums.length > 0 && (
-                            <div className=" max-[434px]:w-[100%!important]">
+                            <div className=" max-[600px]:w-[100%!important]">
                               <h5>Albums</h5>
                               <div>
                                 {searchResults.length !== undefined && (
@@ -1873,7 +1873,7 @@ const Home = () => {
                             </div>
                           )}
                           {searchResults[2].playlists.length > 0 && (
-                            <div className=" max-[434px]:w-[100%!important]">
+                            <div className=" max-[600px]:w-[100%!important]">
                               <h5>Playlists</h5>
                               <div>
                                 {searchResults.length !== undefined && (
@@ -2012,7 +2012,7 @@ const Home = () => {
                             </div>
                           )}
                           {searchResults[3].topQuery.length > 0 && (
-                            <div className=" max-[434px]:w-[100%!important]">
+                            <div className=" max-[600px]:w-[100%!important]">
                               <h5>Top Query</h5>
                               <div>
                                 {searchResults.length !== undefined && (
@@ -2177,7 +2177,7 @@ const Home = () => {
                             </div>
                           )}
                           {searchResults[4].artists.length > 0 && (
-                            <div className=" max-[434px]:w-[100%!important]">
+                            <div className=" max-[600px]:w-[100%!important]">
                               <h5>Artists</h5>
                               <div>
                                 {searchResults.length !== undefined && (
@@ -2348,7 +2348,7 @@ const Home = () => {
                               : displayingContent.albums
                           );
                         }}
-                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[434px]:w-10 max-[434px]:h-10 max-[434px]:top-[70%] max-[434px]:right-3"
+                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[600px]:w-10 max-[600px]:h-10 max-[600px]:top-[70%] max-[600px]:right-3"
                         src={
                           obtainedAlbum.image[obtainedAlbum.image.length - 1]
                             .link === undefined
@@ -2365,7 +2365,7 @@ const Home = () => {
                     {/**Trending songs */}
                     <h2
                       style={{ fontSize: "clamp(1.3rem,2.8vw,2.5rem)" }}
-                      className="font-sand font-light text-white ml-4 mb-4 tracking-wide max-[434px]:mt-[5%] max-[434px]:mb-[5%]"
+                      className="font-sand font-light text-white ml-4 mb-4 tracking-wide max-[600px]:mt-[5%] max-[600px]:mb-[5%]"
                       id="trendingsongs"
                     >
                       Trending Songs
@@ -2376,7 +2376,7 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].trending.songs.length >
                             0 && (
                             <>
-                              <h1 className="max-[434px]:mt-[3.5%] max-[434px]:mb-[3.5%]">
+                              <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
                                 {Object.keys(ea).join(", ")}{" "}
                                 <button
                                   onClick={() => {
@@ -2388,7 +2388,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❮
                                 </button>
@@ -2402,7 +2402,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❯
                                 </button>
@@ -2538,7 +2538,7 @@ const Home = () => {
                     <h2
                       id="trendingalbums"
                       style={{ fontSize: "clamp(1.3rem,2.8vw,2.5rem)" }}
-                      className=" font-sand font-light  text-white ml-4 mb-4 tracking-wide max-[434px]:mt-[5%] max[434px]:mb-[5%]"
+                      className=" font-sand font-light  text-white ml-4 mb-4 tracking-wide max-[600px]:mt-[5%] max[600px]:mb-[5%]"
                     >
                       Trending Albums
                     </h2>
@@ -2548,7 +2548,7 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].trending.albums
                             .length > 0 && (
                             <>
-                              <h1 className="max-[434px]:mt-[3.5%] max-[434px]:mb-[3.5%]">
+                              <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
                                 {Object.keys(ea).join(", ")}{" "}
                                 <button
                                   onClick={() => {
@@ -2560,7 +2560,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❮
                                 </button>
@@ -2574,7 +2574,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❯
                                 </button>
@@ -2691,7 +2691,7 @@ const Home = () => {
                     <h2
                       id="otheralbums"
                       style={{ fontSize: "clamp(1.3rem,2.8vw,2.5rem)" }}
-                      className=" font-sand font-light text-white ml-4 mb-4 tracking-wide max-[434px]:mt-[5%] max[434px]:mb-[5%]"
+                      className=" font-sand font-light text-white ml-4 mb-4 tracking-wide max-[600px]:mt-[5%] max[600px]:mb-[5%]"
                     >
                       Other Albums
                     </h2>
@@ -2700,7 +2700,7 @@ const Home = () => {
                         (ea) =>
                           ea[Object.keys(ea).join(", ")].albums.length > 0 && (
                             <>
-                              <h1 className="max-[434px]:mt-[3.5%] max-[434px]:mb-[3.5%]">
+                              <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
                                 {Object.keys(ea).join(", ")}{" "}
                                 <button
                                   onClick={() => {
@@ -2710,7 +2710,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❮
                                 </button>
@@ -2722,7 +2722,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❯
                                 </button>
@@ -2889,7 +2889,7 @@ const Home = () => {
                     <h2
                       id="playlists"
                       style={{ fontSize: "clamp(1.3rem,2.8vw,2.5rem)" }}
-                      className=" font-sand font-light text-white ml-4 mb-4 tracking-wide max-[434px]:mt-[5%] max[434px]:mb-[5%]"
+                      className=" font-sand font-light text-white ml-4 mb-4 tracking-wide max-[600px]:mt-[5%] max[600px]:mb-[5%]"
                     >
                       Playlists
                     </h2>
@@ -2899,7 +2899,7 @@ const Home = () => {
                           ea[Object.keys(ea).join(", ")].playlists.length >
                             0 && (
                             <>
-                              <h1 className="max-[434px]:mt-[3.5%] max-[434px]:mb-[3.5%]">
+                              <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
                                 {Object.keys(ea).join(", ")}{" "}
                                 <button
                                   onClick={() => {
@@ -2909,7 +2909,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❮
                                 </button>
@@ -2921,7 +2921,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❯
                                 </button>
@@ -3073,7 +3073,7 @@ const Home = () => {
                     <h2
                       id="charts"
                       style={{ fontSize: "clamp(1.3rem,2.8vw,2.5rem)" }}
-                      className="font-sand font-light text-white ml-4 mb-4 tracking-wide max-[434px]:mt-[5%] max[434px]:mb-[5%]"
+                      className="font-sand font-light text-white ml-4 mb-4 tracking-wide max-[600px]:mt-[5%] max[600px]:mb-[5%]"
                     >
                       Top Charts
                     </h2>
@@ -3082,7 +3082,7 @@ const Home = () => {
                         (ea) =>
                           ea[Object.keys(ea).join(", ")].charts.length > 0 && (
                             <>
-                              <h1 className="max-[434px]:mt-[3.5%] max-[434px]:mb-[3.5%]">
+                              <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
                                 {Object.keys(ea).join(", ")}{" "}
                                 <button
                                   onClick={() => {
@@ -3092,7 +3092,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❮
                                 </button>
@@ -3104,7 +3104,7 @@ const Home = () => {
                                     );
                                   }}
                                   type="button"
-                                  className="max-[434px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
                                 >
                                   ❯
                                 </button>
@@ -3285,7 +3285,7 @@ const Home = () => {
                           100 || 0
                       }%`,
                     }}
-                    className="absolute border-2 border-solid border-[#9794ff]  top-0 max-[434px]:top-[95%]"
+                    className="absolute border-2 border-solid border-[#9794ff]  top-0 max-[600px]:top-[95%]"
                   ></section>
                   <input
                     id="dragger"
@@ -3316,12 +3316,12 @@ const Home = () => {
                           alt={songPlaying[0].name}
                         />
                       </div>
-                      <div className="max-[434px]:w-[45%] max-[745px]:w-[25%]">
+                      <div className="max-[600px]:w-[45%] max-[745px]:w-[25%]">
                         <marquee>{songPlaying[0].name}</marquee>
                         <p>{songPlaying[0].primaryArtists}</p>
                       </div>
 
-                      <div className="player-box ml-[-2%!important] max-[434px]:w-[20%]">
+                      <div className="player-box ml-[-2%!important] max-[600px]:w-[20%]">
                         {shuffle ? (
                           <button
                             onClick={() => {
@@ -3338,7 +3338,7 @@ const Home = () => {
                             }}
                             type="button"
                           >
-                            <FaShuffle className="text-white max-[434px]:hidden" />
+                            <FaShuffle className="text-white max-[600px]:hidden" />
                           </button>
                         )}
                         <button
@@ -3346,7 +3346,7 @@ const Home = () => {
                           onClick={() => {
                             changeSongs("prev");
                           }}
-                          className="active:text-white max-[434px]:hidden"
+                          className="active:text-white max-[600px]:hidden"
                         >
                           <IoPlayBack />
                         </button>
@@ -3377,7 +3377,7 @@ const Home = () => {
                           onClick={() => {
                             changeSongs("next");
                           }}
-                          className="active:text-white max-[434px]:hidden"
+                          className="active:text-white max-[600px]:hidden"
                         >
                           <IoPlayForward />
                         </button>
@@ -3397,11 +3397,11 @@ const Home = () => {
                             }}
                             type="button"
                           >
-                            <TiArrowLoop className="text-4xl text-white max-[434px]:hidden" />
+                            <TiArrowLoop className="text-4xl text-white max-[600px]:hidden" />
                           </button>
                         )}
                       </div>
-                      <div className="volume-box max-[434px]:hidden">
+                      <div className="volume-box max-[600px]:hidden">
                         {volume === 0 ? (
                           <button type="button">
                             <HiMiniSpeakerXMark />
@@ -3419,7 +3419,7 @@ const Home = () => {
                           max="1"
                           step="0.1"
                           value={volume}
-                          className="max-[434px]:hidden"
+                          className="max-[600px]:hidden"
                         />
                         <h5
                           style={{ paddingLeft: `${volume * 60}%` }}
@@ -3428,7 +3428,7 @@ const Home = () => {
                           {volume * 100}%
                         </h5>
                       </div>
-                      <span className="timertime max-[434px]:hidden max-[747px]:hidden">
+                      <span className="timertime max-[600px]:hidden max-[747px]:hidden">
                         {Math.floor(audioref.current.currentTime / 60)} :{" "}
                         {Math.floor(audioref.current.currentTime % 60) < 10 &&
                           0}

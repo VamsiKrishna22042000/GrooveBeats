@@ -57,7 +57,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer; /* Set cursor style */
 }
 
-@media screen and (max-width: 434px) {
+@media screen and (max-width: 600px) {
   #dragger[type="range"] {
     position: absolute;
     top: 95%;
@@ -257,7 +257,7 @@ input[type="search"]::-ms-clear {
     overflow-y: scroll;
   }
   .songs-search {
-    @apply w-[80%] my-2  text-white py-3 px-5 flex justify-start items-center rounded-md cursor-pointer relative max-[434px]:py-2 max-[434px]:px-2 max-[434px]:w-full;
+    @apply w-[80%] my-2  text-white py-3 px-5 flex justify-start items-center rounded-md cursor-pointer relative max-[600px]:py-2 max-[600px]:px-2 max-[600px]:w-full;
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
@@ -337,7 +337,7 @@ input[type="search"]::-ms-clear {
   }
 
   .home-page {
-    @apply h-full w-[85%] border-solid  overflow-x-hidden overflow-y-scroll relative pb-[7%] max-[434px]:pb-[40%];
+    @apply h-full w-[85%] border-solid  overflow-x-hidden overflow-y-scroll relative pb-[7%] max-[600px]:pb-[40%];
     background-image: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.7),
@@ -380,7 +380,7 @@ input[type="search"]::-ms-clear {
     cursor: pointer;
     min-width: 20%;
     max-width: 20%;
-    @apply max-[434px]:min-w-[42%] max-w-[42%] mx-[2%];
+    @apply max-[600px]:min-w-[42%] max-w-[42%] mx-[2%];
   }
 
   .fade-in {
@@ -411,7 +411,7 @@ input[type="search"]::-ms-clear {
     }
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     .songs-logo-con {
       position: absolute;
       top: 8%;
@@ -456,7 +456,7 @@ input[type="search"]::-ms-clear {
   }
 
   #player {
-    @apply w-[85%] bottom-0 fixed flex flex-row justify-start items-center max-[434px]:w-[100%];
+    @apply w-[85%] bottom-0 fixed flex flex-row justify-start items-center max-[600px]:w-[100%];
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
@@ -467,10 +467,10 @@ input[type="search"]::-ms-clear {
   .playerimage {
     width: 6.5%;
     margin: 1% 0%;
-    @apply cursor-pointer max-[434px]:w-[15%] max-[434px]:mt-[4%]  max-[434px]:mb-[3%];
+    @apply cursor-pointer max-[600px]:w-[15%] max-[600px]:mt-[4%]  max-[600px]:mb-[3%];
   }
 
-  @media screen and (min-width: 434px) and (max-width: 745px) {
+  @media screen and (min-width: 600px) and (max-width: 745px) {
     .playerimage {
       width: 8.5%;
     }
@@ -490,7 +490,7 @@ input[type="search"]::-ms-clear {
     font-size: clamp(0.9rem, 1.5vw, 1.2rem);
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     #player > div > marquee {
       width: 38vw;
     }
@@ -514,7 +514,7 @@ input[type="search"]::-ms-clear {
     font-size: clamp(0.7rem, 1vw, 0.9rem);
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     #player > div > h4 {
       width: 43vw;
     }
@@ -576,11 +576,11 @@ input[type="search"]::-ms-clear {
 
 @layer base {
   .album-header {
-    @apply w-full text-white p-3 flex justify-start items-start relative max-[434px]:flex-col;
+    @apply w-full text-white p-3 flex justify-start items-start relative max-[600px]:flex-col;
   }
 
   #allbum-image-con {
-    @apply w-[25%] ml-[10%] mr-[5%] max-[434px]:w-[85%] max-[434px]:ml-0 max-[434px]:mr-0 max-[434px]:mb-[-2%];
+    @apply w-[25%] ml-[10%] mr-[5%] max-[600px]:w-[85%] max-[600px]:ml-0 max-[600px]:mr-0 max-[600px]:mb-[-2%];
   }
 
   #allbum-image-con > img {
@@ -596,10 +596,10 @@ input[type="search"]::-ms-clear {
     font-size: clamp(0.5rem, 1.1vw, 1rem);
   }
   .album-details {
-    @apply w-[40%] max-[434px]:w-[85%];
+    @apply w-[40%] max-[600px]:w-[85%];
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     .album-header {
       @apply items-center p-5;
       backdrop-filter: blur(16px) saturate(180%);
@@ -720,7 +720,7 @@ input[type="search"]::-ms-clear {
     @apply mr-[-10%] ml-[10%];
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     .album-details > div {
       @apply justify-center mb-[5%];
     }
@@ -766,7 +766,7 @@ input[type="search"]::-ms-clear {
     display: none; /* hidden */
   }
 
-  @media screen and (max-width: 434px) {
+  @media screen and (max-width: 600px) {
     .drawer {
       width: 100%;
       position: fixed;
