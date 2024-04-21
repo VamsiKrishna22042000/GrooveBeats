@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../../index.css";
 
 /**Icons */
@@ -18,8 +18,12 @@ const Albums = ({
   setWhatToDisplay,
   setPlaySong,
   playSong,
+  getArtist,
 }) => {
   const [fav, setFav] = useState(false);
+  const [load, setLoad] = useState(false);
+
+  const element = useRef();
 
   useEffect(() => {
     const audiotag = document.querySelector(".album-header");
@@ -31,6 +35,27 @@ const Albums = ({
     }
   });
 
+  // useEffect(() => {
+  //   if (!element.current) return;
+  //   const elem = element.current;
+
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       if (entries[0].isIntersecting) {
+  //         console.log("asedfkhj");
+  //         getArtist();
+  //       }
+  //     },
+  //     { threshold: 0.7 }
+  //   );
+
+  //   observer.observe(elem);
+
+  //   return () => {
+  //     observer.unobserve(elem);
+  //   };
+  // });
+
   return (
     obtainedAlbum && (
       <>
@@ -41,7 +66,7 @@ const Albums = ({
             }}
             className="top-[10%] font-extrabold right-10 cursor-pointer fixed z-20 hover:scale-125 transition-all p-[1%] rounded-[100%]  max-[600px]:right-[90%] max-[600px]:top-[5%]"
             style={{
-              fontSize: "clamp(1rem,2.2vw, 2rem)",
+              fontSize: "clamp(1.2rem,2.2vw, 2rem)",
               backdropFilter: "blur(16px) saturate(180%)",
               WebkitBackdropFilter: "blur(16px) saturate(180%)",
               backgroundColor: "rgba(17, 25, 40, 0.75)",
@@ -141,7 +166,7 @@ const Albums = ({
             </div>
           </div>
         </div>
-        <div className="album-songs">
+        <div ref={element} className="album-songs">
           {obtainedAlbum.songs.map((each) => (
             <div key={each.id}>
               <img
@@ -214,6 +239,14 @@ const Albums = ({
             </div>
           ))}
         </div>
+        <button
+          onClick={getArtist}
+          type="button"
+          className="bg-white px-5 py-2 ml-[87%] rounded-lg cursor-pointer"
+          style={{ marginBottom: "2.5%" }}
+        >
+          Load More
+        </button>
       </>
     )
   );

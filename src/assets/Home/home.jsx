@@ -158,6 +158,7 @@ const Home = () => {
   const [selectedComponent, setSelectedComponent] = useState("home");
 
   const [noresults, setNoResults] = useState(false);
+  const [page, setPage] = useState(0);
 
   /**Observer Animation */
 
@@ -269,11 +270,13 @@ const Home = () => {
         const res = await axios?.get(url);
         if (res.status === 200) {
           setLoad(true);
+
           return { [each]: res.data.data };
         }
       });
 
       const allLanguageSongs = await Promise.all(promises);
+      console.log(allLanguageSongs);
 
       setAllLanguageSongs(allLanguageSongs);
     } catch (error) {
@@ -361,13 +364,30 @@ const Home = () => {
     try {
       const url = `${import.meta.env.VITE_UPDATE_URL}/artists/${
         artisttoSearch.id
-      }/songs`;
+      }/songs?page=${page}`;
 
       const res = await axios.get(url);
       if (res.status === 200) {
-        setObtaindAlbum({ ...artisttoSearch.details, ...res.data.data });
-        setWhatToDisplay(displayingContent.albums);
-        playSelectedSong(res.data.data.songs[0].id, res.data.data.songs);
+        setPage(page + 1);
+        if (obtainedAlbum === null) {
+          setObtaindAlbum({ ...artisttoSearch.details, ...res.data.data });
+          setWhatToDisplay(displayingContent.albums);
+          playSelectedSong(res.data.data.songs[0].id, res.data.data.songs);
+        } else if (
+          obtainedAlbum !== null &&
+          obtainedAlbum.type === "artist" &&
+          artisttoSearch.details.id === obtainedAlbum.id
+        ) {
+          setObtaindAlbum({
+            ...obtainedAlbum,
+            songs: [...obtainedAlbum.songs, ...res.data.data.songs],
+          });
+          setLoad(true);
+        } else {
+          setObtaindAlbum({ ...artisttoSearch.details, ...res.data.data });
+          setWhatToDisplay(displayingContent.albums);
+          playSelectedSong(res.data.data.songs[0].id, res.data.data.songs);
+        }
       }
     } catch (error) {
       setLoad(true);
@@ -549,10 +569,10 @@ const Home = () => {
     return (
       <>
         <div className="selectedBackGround">
-          <h1 className="  text-white font-semibold text-3xl  ml-[20%] mt-[3%]">
+          <h1 className="text-white font-semibold text-3xl  ml-[20%] mt-[3%] max-[1024px]:ml-[5%] max-[1024px]:mt-[10%] max-[1024px]:ml-[5%] max-[1024px]:mt-[30%]">
             Select Languages
           </h1>
-          <div className="selectedSongCon">
+          <div className="selectedSongCon max-[600px]:mt-[5%] max-[600px]:ml-[-1%] max-[600px]:w-[90%] max-[600px]:max-h-[60%] max-[600px]:min-h-[60%] max-[600px]:flex max-[600px]:justify-around max-[600px]:items-center max-[1024px]:mt-[2%] max-[1024px]:ml-[-1%] max-[1024px]:w-[90%] max-[1024px]:max-h-[60%] max-[1024px]:min-h-[60%] max-[1024px]:flex max-[1024px]:justify-around max-[1024px]:items-center">
             {allLanguages.map((each) => (
               <div
                 onClick={() => {
@@ -560,15 +580,15 @@ const Home = () => {
                 }}
                 key={each.backgroundColor}
                 style={{ backgroundColor: `${each.backgroundColor}` }}
-                className="text-center p-[2%] w-[15%] m-[5%] rounded-lg cursor-pointer active:scale-75 transition-all duration-300"
+                className="text-center p-[2%] h-[24%] w-[15%] m-[5%] rounded-lg cursor-pointer active:scale-75 transition-all duration-300 max-[600px]:w-[45%] max-[600px]:p-5 max-[600px]:m-2 max-[600px]:h-[18%!important] max-[900px]:h-[18%!important] max-[1024px]:h-[18%!important] max-[1024px]:flex max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center max-[900px]:w-[20%]"
               >
                 <p
                   className="capitalize  font-[500]"
-                  style={{ fontSize: "clamp(.6rem,1.3vw,2rem)" }}
+                  style={{ fontSize: "clamp(.9rem,1.3vw,2rem)" }}
                 >
                   {each.language}
                 </p>
-                <h1 style={{ fontSize: "clamp(.6rem,1.3vw,2rem)" }}>
+                <h1 style={{ fontSize: "clamp(.9rem,1.3vw,2rem)" }}>
                   {each.letter}
                 </h1>
               </div>
@@ -586,10 +606,10 @@ const Home = () => {
             type="button"
             style={
               selectedHere.length > 0
-                ? { fontSize: "clamp(.6rem,1.3vw,1rem)", alignSelf: "end" }
+                ? { fontSize: "clamp(.9rem,1.3vw,1rem)", alignSelf: "end" }
                 : { visibility: "hidden" }
             }
-            className="text-black mt-[2%] mb-[2%] font-semibold text-md  bottom-8 bg-white px-5 py-2 rounded-lg mr-[10%]  active:scale-90 transition-all duration-300 "
+            className="text-black mt-[2%] mb-[2%] font-semibold text-md  bottom-8 bg-white px-5 py-2 rounded-lg mr-[10%]  active:scale-90 transition-all duration-300  max-[600px]:mt-[5%]"
           >
             Submit
           </button>
@@ -640,7 +660,7 @@ const Home = () => {
       <div className="home-con">
         <div className="home-sidebar max-[600px]:hidden max-[1024px]:hidden">
           <div>
-            <div className="logoimage-con">
+            <div className="logoimage-con ">
               <img src="/logo.webp" alt="logo" />
             </div>
           </div>
@@ -749,168 +769,204 @@ const Home = () => {
                     <img className="block max-w-[100%]" src="/logo.webp" />
                   </div>
                 </div>
-                <div id="nav-bar">
-                  <div
-                    className={
-                      whatToDisplay !== displayingContent.home
-                        ? "searchbox max-[600px]:hidden"
-                        : "searchbox"
-                    }
-                  >
-                    <input
-                      id="search"
-                      className="searchbar"
-                      type="search"
-                      value={searchBar.search}
-                      placeholder={listening ? "listening . . ." : "Search"}
-                      onChange={(e) => {
-                        setSearchBar({ ...searchBar, search: e.target.value });
-                      }}
-                      onFocus={() => {
-                        setWhatToDisplay(displayingContent.home);
-                        if (searchBar.animation !== "searchresults2") {
+                {whatToDisplay === displayingContent.home && (
+                  <div id="nav-bar">
+                    <div className="searchbox">
+                      <input
+                        id="search"
+                        className="searchbar"
+                        type="search"
+                        value={searchBar.search}
+                        placeholder={listening ? "listening . . ." : "Search"}
+                        onChange={(e) => {
                           setSearchBar({
                             ...searchBar,
-                            animation: "searchresults1",
+                            search: e.target.value,
                           });
-                          const timeId = setTimeout(() => {
+                        }}
+                        onFocus={() => {
+                          setWhatToDisplay(displayingContent.home);
+                          if (searchBar.animation !== "searchresults2") {
                             setSearchBar({
                               ...searchBar,
-                              animation: "searchresults2",
+                              animation: "searchresults1",
                             });
-                          }, 1000);
-                          setSearchTimeId(timeId);
-                        }
-                      }}
-                      onBlur={() => {
-                        // document.querySelectorAll("*").forEach((element) => {
-                        //   if (element?.className === "searchresults2") {
-                        //     console.log(true);
-                        //   } else {
-                        //     console.log(false);
-                        //   }
-                        // });
-                        // setSearchBar({
-                        //   ...searchBar,
-                        //   animation: "searchresults3",
-                        // });
-                        // setTimeout(() => {
-                        //   setSearchBar({ ...searchBar, animation: "" });
-                        // }, 1000);
-                      }}
-                    />
-                    {listening ? (
-                      <IoIosMicOff
-                        onClick={stopRecognition}
-                        className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer"
-                      />
-                    ) : (
-                      <IoIosMic
-                        onClick={startRecognition}
-                        className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer"
-                      />
-                    )}
-                    {searchBar.search !== "" && (
-                      <RxCross2
-                        className="cross cursor-pointer text-white mt-[-0.3%]"
-                        onClick={() => {
-                          setSearchBar({ ...searchBar, search: "" });
+                            const timeId = setTimeout(() => {
+                              setSearchBar({
+                                ...searchBar,
+                                animation: "searchresults2",
+                              });
+                            }, 1000);
+                            setSearchTimeId(timeId);
+                          }
+                        }}
+                        onBlur={() => {
+                          // document.querySelectorAll("*").forEach((element) => {
+                          //   if (element?.className === "searchresults2") {
+                          //     console.log(true);
+                          //   } else {
+                          //     console.log(false);
+                          //   }
+                          // });
+                          // setSearchBar({
+                          //   ...searchBar,
+                          //   animation: "searchresults3",
+                          // });
+                          // setTimeout(() => {
+                          //   setSearchBar({ ...searchBar, animation: "" });
+                          // }, 1000);
                         }}
                       />
-                    )}
-                  </div>
-
-                  <div className={searchBar.animation}>
-                    {searchBar.animation === "searchresults2" && (
-                      <section className="fixed z-30 top-[10%] right-[5%] cursor-pointer z-10 active:scale-90 hover:scale-125 transition-all max-[600px]:top-[3%] max-[1024px]:top-[3%]">
+                      {listening ? (
+                        <IoIosMicOff
+                          onClick={stopRecognition}
+                          className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer max-[600px]:bottom-2.4"
+                        />
+                      ) : (
+                        <IoIosMic
+                          onClick={startRecognition}
+                          className="text-2xl mic-color absolute bottom-2 left-1 cursor-pointer max-[600px]:bottom-2.4"
+                        />
+                      )}
+                      {searchBar.search !== "" && (
                         <RxCross2
-                          className="text-white"
+                          className="cross cursor-pointer text-white mt-[-0.3%]"
                           onClick={() => {
-                            setSearchBar({
-                              animation: "searchresults3",
-                              search: "",
-                            });
-                            setTimeout(() => {
-                              setSearchBar({ search: "", animation: "" });
-                            }, 1000);
+                            setSearchBar({ ...searchBar, search: "" });
                           }}
                         />
-                      </section>
-                    )}
-                    {searchResults.length <= 0 &&
-                      searchBar.search !== "" &&
-                      searchBar.animation === "searchresults2" &&
-                      (noresults ? (
-                        <h1
-                          className="text-white absolute top-[50%] left-[50%]"
-                          style={{
-                            fontSize: "clamp(1rem,3.2vw,3rem)",
-                            transform: "translate(-50%,-50%)",
-                          }}
-                        >
-                          <MagnifyingGlass
-                            visible={true}
-                            height="80"
-                            width="80"
-                            glassColor="#ffffff"
-                            color="#9794ff"
+                      )}
+                    </div>
+
+                    <div className={searchBar.animation}>
+                      {searchBar.animation === "searchresults2" && (
+                        <section className="fixed z-30 top-[10%] right-[5%] cursor-pointer z-10 active:scale-90 hover:scale-125 transition-all max-[600px]:top-[3%] max-[1024px]:top-[3%]">
+                          <RxCross2
+                            className="text-white"
+                            onClick={() => {
+                              setSearchBar({
+                                animation: "searchresults3",
+                                search: "",
+                              });
+                              setTimeout(() => {
+                                setSearchBar({ search: "", animation: "" });
+                              }, 1000);
+                            }}
                           />
-                        </h1>
-                      ) : (
-                        <h1
-                          className="text-white absolute top-[50%] left-[50%]"
-                          style={{
-                            fontSize: "clamp(1rem,3.2vw,3rem)",
-                            transform: "translate(-50%,-50%)",
-                          }}
-                        >
-                          No Results Found
-                        </h1>
-                      ))}
-                    {searchBar.animation === "searchresults2" &&
-                    searchBar.search === "" ? (
-                      <>
-                        <div className="search-re max-[600px]:w-[100%!important]">
-                          <h5 className="search-re">Trending Songs</h5>
-                          <div>
-                            {allLanguageSongs.length !== undefined &&
-                              allLanguageSongs.map(
-                                (ea) =>
-                                  ea[Object.keys(ea).join(", ")].trending.songs
-                                    .length > 0 && (
-                                    <>
-                                      <div>
-                                        {ea[
-                                          Object.keys(ea).join(", ")
-                                        ].trending.songs.map((each) => (
-                                          <div
-                                            onClick={() => {
-                                              setObtaindAlbum(null);
-                                              setSearchBar({
-                                                ...searchBar,
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                        </section>
+                      )}
+                      {searchResults.length <= 0 &&
+                        searchBar.search !== "" &&
+                        searchBar.animation === "searchresults2" &&
+                        (noresults ? (
+                          <h1
+                            className="text-white absolute top-[50%] left-[50%]"
+                            style={{
+                              fontSize: "clamp(1rem,3.2vw,3rem)",
+                              transform: "translate(-50%,-50%)",
+                            }}
+                          >
+                            <MagnifyingGlass
+                              visible={true}
+                              height="80"
+                              width="80"
+                              glassColor="#ffffff"
+                              color="#9794ff"
+                            />
+                          </h1>
+                        ) : (
+                          <h1
+                            className="text-white absolute top-[50%] left-[50%]"
+                            style={{
+                              fontSize: "clamp(1rem,3.2vw,3rem)",
+                              transform: "translate(-50%,-50%)",
+                            }}
+                          >
+                            No Results Found
+                          </h1>
+                        ))}
+                      {searchBar.animation === "searchresults2" &&
+                      searchBar.search === "" ? (
+                        <>
+                          <div className="search-re max-[600px]:w-[100%!important]">
+                            <h5 className="search-re">Trending Songs</h5>
+                            <div>
+                              {allLanguageSongs.length !== undefined &&
+                                allLanguageSongs.map(
+                                  (ea) =>
+                                    ea[Object.keys(ea).join(", ")].trending
+                                      .songs.length > 0 && (
+                                      <>
+                                        <div>
+                                          {ea[
+                                            Object.keys(ea).join(", ")
+                                          ].trending.songs.map((each) => (
+                                            <div
+                                              onClick={() => {
+                                                setObtaindAlbum(null);
                                                 setSearchBar({
                                                   ...searchBar,
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-                                              const songsArr =
-                                                ea[Object.keys(ea).join(", ")]
-                                                  .trending.songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
-                                            }}
-                                            className="songs-search"
-                                            key={each.id}
-                                          >
-                                            <div className="w-[25%] mr-5">
-                                              {(
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    ...searchBar,
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .trending.songs;
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }}
+                                              className="songs-search"
+                                              key={each.id}
+                                            >
+                                              <div className="w-[25%] mr-5">
+                                                {(
+                                                  <img
+                                                    className="max-w-[100%]  block"
+                                                    onClick={() => {
+                                                      setObtaindAlbum(null);
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation:
+                                                          "searchresults3",
+                                                      });
+                                                      setTimeout(() => {
+                                                        setSearchBar({
+                                                          ...searchBar,
+                                                          animation: "",
+                                                        });
+                                                      }, 1000);
+                                                      const songsArr =
+                                                        ea[
+                                                          Object.keys(ea).join(
+                                                            ", "
+                                                          )
+                                                        ].trending.songs;
+                                                      playSelectedSong(
+                                                        each.id,
+                                                        songsArr
+                                                      );
+                                                    }}
+                                                    src={
+                                                      each.image[
+                                                        each.image.length - 1
+                                                      ].link
+                                                    }
+                                                    alt={each.name}
+                                                  />
+                                                ) || (
+                                                  <img
+                                                    src="/logo.webp"
+                                                    className="skeleton"
+                                                  />
+                                                )}
                                                 <img
-                                                  className="max-w-[100%]  block"
                                                   onClick={() => {
                                                     setObtaindAlbum(null);
                                                     setSearchBar({
@@ -935,121 +991,16 @@ const Home = () => {
                                                       songsArr
                                                     );
                                                   }}
-                                                  src={
-                                                    each.image[
-                                                      each.image.length - 1
-                                                    ].link
-                                                  }
-                                                  alt={each.name}
-                                                />
-                                              ) || (
-                                                <img
+                                                  id="songs-logo-search"
                                                   src="/logo.webp"
-                                                  className="skeleton"
+                                                  alt="logo"
                                                 />
-                                              )}
-                                              <img
-                                                onClick={() => {
-                                                  setObtaindAlbum(null);
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  playSelectedSong(
-                                                    each.id,
-                                                    songsArr
-                                                  );
-                                                }}
-                                                id="songs-logo-search"
-                                                src="/logo.webp"
-                                                alt="logo"
-                                              />
-                                            </div>
+                                              </div>
 
-                                            {(
-                                              <p
-                                                onClick={() => {
-                                                  setObtaindAlbum(null);
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  playSelectedSong(
-                                                    each.id,
-                                                    songsArr
-                                                  );
-                                                }}
-                                                style={{ cursor: "pointer" }}
-                                              >
-                                                {each.name}
-                                              </p>
-                                            ) || (
-                                              <p className="skeleton2 w-full"></p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )
-                              )}
-                          </div>
-                        </div>
-                        <div className=" max-[600px]:w-[100%!important]">
-                          <h5>Trending Albums</h5>
-                          <div>
-                            {allLanguageSongs.length !== undefined &&
-                              allLanguageSongs.map(
-                                (ea) =>
-                                  ea[Object.keys(ea).join(", ")].trending.albums
-                                    .length > 0 && (
-                                    <>
-                                      <div>
-                                        {ea[
-                                          Object.keys(ea).join(", ")
-                                        ].trending.albums.map((each) => (
-                                          <div
-                                            onClick={() => {
-                                              setSearchBar({
-                                                ...searchBar,
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  ...searchBar,
-                                                  animation: "",
-                                                });
-                                              }, 1000);
-                                              setAlbumToSearch(each.id);
-                                            }}
-                                            className="songs-search"
-                                            key={each.id}
-                                          >
-                                            <div className="w-[25%] mr-5">
                                               {(
-                                                <img
-                                                  className="max-w-[100%]  block"
+                                                <p
                                                   onClick={() => {
+                                                    setObtaindAlbum(null);
                                                     setSearchBar({
                                                       ...searchBar,
                                                       animation:
@@ -1062,116 +1013,241 @@ const Home = () => {
                                                       });
                                                     }, 1000);
 
-                                                    setAlbumToSearch(each.id);
+                                                    const songsArr =
+                                                      ea[
+                                                        Object.keys(ea).join(
+                                                          ", "
+                                                        )
+                                                      ].trending.songs;
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
                                                   }}
-                                                  src={
-                                                    each.image[
-                                                      each.image.length - 1
-                                                    ].link
-                                                  }
-                                                  alt={each.name}
-                                                />
+                                                  style={{ cursor: "pointer" }}
+                                                >
+                                                  {each.name}
+                                                </p>
                                               ) || (
-                                                <img
-                                                  src="/logo.webp"
-                                                  className="skeleton"
-                                                />
+                                                <p className="skeleton2 w-full"></p>
                                               )}
-                                              <img
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  setAlbumToSearch(each.id);
-                                                }}
-                                                id="songs-logo-search"
-                                                src="/logo.webp"
-                                                alt="logo"
-                                              />
                                             </div>
-                                            {(
-                                              <p
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  setAlbumToSearch(each.id);
-                                                }}
-                                                style={{ cursor: "pointer" }}
-                                              >
-                                                {each.name}
-                                              </p>
-                                            ) || (
-                                              <p className="skeleton2 w-full"></p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )
-                              )}
+                                          ))}
+                                        </div>
+                                      </>
+                                    )
+                                )}
+                            </div>
                           </div>
-                        </div>
-                        <div className=" max-[600px]:w-[100%!important]">
-                          <h5>Other Albums</h5>
-                          <div>
-                            {allLanguageSongs.length !== undefined &&
-                              allLanguageSongs.map(
-                                (ea) =>
-                                  ea[Object.keys(ea).join(", ")].albums.length >
-                                    0 && (
-                                    <>
-                                      <div>
-                                        {ea[
-                                          Object.keys(ea).join(", ")
-                                        ].albums.map((each) => (
-                                          <div
-                                            onClick={() => {
-                                              setSearchBar({
-                                                ...searchBar,
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                          <div className=" max-[600px]:w-[100%!important]">
+                            <h5>Trending Albums</h5>
+                            <div>
+                              {allLanguageSongs.length !== undefined &&
+                                allLanguageSongs.map(
+                                  (ea) =>
+                                    ea[Object.keys(ea).join(", ")].trending
+                                      .albums.length > 0 && (
+                                      <>
+                                        <div>
+                                          {ea[
+                                            Object.keys(ea).join(", ")
+                                          ].trending.albums.map((each) => (
+                                            <div
+                                              onClick={() => {
                                                 setSearchBar({
                                                   ...searchBar,
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-
-                                              const songsArr =
-                                                ea[Object.keys(ea).join(", ")]
-                                                  .albums;
-
-                                              if (each.type === "album") {
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    ...searchBar,
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
                                                 setAlbumToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              }
-                                            }}
-                                            className="songs-search"
-                                            key={each.id}
-                                          >
-                                            <div className="w-[25%] mr-5">
-                                              {(
+                                              }}
+                                              className="songs-search"
+                                              key={each.id}
+                                            >
+                                              <div className="w-[25%] mr-5">
+                                                {(
+                                                  <img
+                                                    className="max-w-[100%]  block"
+                                                    onClick={() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation:
+                                                          "searchresults3",
+                                                      });
+                                                      setTimeout(() => {
+                                                        setSearchBar({
+                                                          ...searchBar,
+                                                          animation: "",
+                                                        });
+                                                      }, 1000);
+
+                                                      setAlbumToSearch(each.id);
+                                                    }}
+                                                    src={
+                                                      each.image[
+                                                        each.image.length - 1
+                                                      ].link
+                                                    }
+                                                    alt={each.name}
+                                                  />
+                                                ) || (
+                                                  <img
+                                                    src="/logo.webp"
+                                                    className="skeleton"
+                                                  />
+                                                )}
                                                 <img
-                                                  className="max-w-[100%]  block"
+                                                  onClick={() => {
+                                                    setSearchBar({
+                                                      ...searchBar,
+                                                      animation:
+                                                        "searchresults3",
+                                                    });
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    setAlbumToSearch(each.id);
+                                                  }}
+                                                  id="songs-logo-search"
+                                                  src="/logo.webp"
+                                                  alt="logo"
+                                                />
+                                              </div>
+                                              {(
+                                                <p
+                                                  onClick={() => {
+                                                    setSearchBar({
+                                                      ...searchBar,
+                                                      animation:
+                                                        "searchresults3",
+                                                    });
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    setAlbumToSearch(each.id);
+                                                  }}
+                                                  style={{ cursor: "pointer" }}
+                                                >
+                                                  {each.name}
+                                                </p>
+                                              ) || (
+                                                <p className="skeleton2 w-full"></p>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </>
+                                    )
+                                )}
+                            </div>
+                          </div>
+                          <div className=" max-[600px]:w-[100%!important]">
+                            <h5>Other Albums</h5>
+                            <div>
+                              {allLanguageSongs.length !== undefined &&
+                                allLanguageSongs.map(
+                                  (ea) =>
+                                    ea[Object.keys(ea).join(", ")].albums
+                                      .length > 0 && (
+                                      <>
+                                        <div>
+                                          {ea[
+                                            Object.keys(ea).join(", ")
+                                          ].albums.map((each) => (
+                                            <div
+                                              onClick={() => {
+                                                setSearchBar({
+                                                  ...searchBar,
+                                                  animation: "searchresults3",
+                                                });
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    ...searchBar,
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
+
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .albums;
+
+                                                if (each.type === "album") {
+                                                  setAlbumToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }
+                                              }}
+                                              className="songs-search"
+                                              key={each.id}
+                                            >
+                                              <div className="w-[25%] mr-5">
+                                                {(
+                                                  <img
+                                                    className="max-w-[100%]  block"
+                                                    onClick={() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation:
+                                                          "searchresults3",
+                                                      });
+                                                      setTimeout(() => {
+                                                        setSearchBar({
+                                                          ...searchBar,
+                                                          animation: "",
+                                                        });
+                                                      }, 1000);
+                                                      const songsArr =
+                                                        ea[
+                                                          Object.keys(ea).join(
+                                                            ", "
+                                                          )
+                                                        ].albums;
+
+                                                      if (
+                                                        each.type === "album"
+                                                      ) {
+                                                        setAlbumToSearch(
+                                                          each.id
+                                                        );
+                                                      } else if (
+                                                        each.type === "song"
+                                                      ) {
+                                                        playSelectedSong(
+                                                          each.id,
+                                                          songsArr
+                                                        );
+                                                      }
+                                                    }}
+                                                    src={
+                                                      each.image[
+                                                        each.image.length - 1
+                                                      ].link
+                                                    }
+                                                    alt={each.name}
+                                                  />
+                                                ) || (
+                                                  <img
+                                                    src="/logo.webp"
+                                                    className="skeleton"
+                                                  />
+                                                )}
+                                                <img
                                                   onClick={() => {
                                                     setSearchBar({
                                                       ...searchBar,
@@ -1202,140 +1278,151 @@ const Home = () => {
                                                       );
                                                     }
                                                   }}
-                                                  src={
-                                                    each.image[
-                                                      each.image.length - 1
-                                                    ].link
-                                                  }
-                                                  alt={each.name}
-                                                />
-                                              ) || (
-                                                <img
+                                                  id="songs-logo-search"
                                                   src="/logo.webp"
-                                                  className="skeleton"
+                                                  alt="logo"
                                                 />
+                                              </div>
+                                              {(
+                                                <p
+                                                  onClick={() => {
+                                                    setSearchBar({
+                                                      ...searchBar,
+                                                      animation:
+                                                        "searchresults3",
+                                                    });
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    const songsArr =
+                                                      ea[
+                                                        Object.keys(ea).join(
+                                                          ", "
+                                                        )
+                                                      ].albums;
+
+                                                    if (each.type === "album") {
+                                                      setAlbumToSearch(each.id);
+                                                    } else if (
+                                                      each.type === "song"
+                                                    ) {
+                                                      playSelectedSong(
+                                                        each.id,
+                                                        songsArr
+                                                      );
+                                                    }
+                                                  }}
+                                                  style={{ cursor: "pointer" }}
+                                                >
+                                                  {each.name}
+                                                </p>
+                                              ) || (
+                                                <p className="skeleton2 w-full"></p>
                                               )}
-                                              <img
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].albums;
-
-                                                  if (each.type === "album") {
-                                                    setAlbumToSearch(each.id);
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                id="songs-logo-search"
-                                                src="/logo.webp"
-                                                alt="logo"
-                                              />
                                             </div>
-                                            {(
-                                              <p
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].albums;
-
-                                                  if (each.type === "album") {
-                                                    setAlbumToSearch(each.id);
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                style={{ cursor: "pointer" }}
-                                              >
-                                                {each.name}
-                                              </p>
-                                            ) || (
-                                              <p className="skeleton2 w-full"></p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )
-                              )}
+                                          ))}
+                                        </div>
+                                      </>
+                                    )
+                                )}
+                            </div>
                           </div>
-                        </div>
-                        <div className=" max-[600px]:w-[100%!important]">
-                          <h5>Playlists</h5>
-                          <div>
-                            {allLanguageSongs.length !== undefined &&
-                              allLanguageSongs.map(
-                                (ea) =>
-                                  ea[Object.keys(ea).join(", ")].playlists
-                                    .length > 0 && (
-                                    <>
-                                      <div>
-                                        {ea[
-                                          Object.keys(ea).join(", ")
-                                        ].playlists.map((each) => (
-                                          <div
-                                            onClick={() => {
-                                              setSearchBar({
-                                                ...searchBar,
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                          <div className=" max-[600px]:w-[100%!important]">
+                            <h5>Playlists</h5>
+                            <div>
+                              {allLanguageSongs.length !== undefined &&
+                                allLanguageSongs.map(
+                                  (ea) =>
+                                    ea[Object.keys(ea).join(", ")].playlists
+                                      .length > 0 && (
+                                      <>
+                                        <div>
+                                          {ea[
+                                            Object.keys(ea).join(", ")
+                                          ].playlists.map((each) => (
+                                            <div
+                                              onClick={() => {
                                                 setSearchBar({
                                                   ...searchBar,
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-                                              const songsArr =
-                                                ea[Object.keys(ea).join(", ")]
-                                                  .trending.albums;
-                                              if (each.type === "playlist") {
-                                                setPlaylistToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              }
-                                            }}
-                                            className="songs-search"
-                                            key={each.id}
-                                          >
-                                            <div className="w-[25%] mr-5">
-                                              {(
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    ...searchBar,
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .trending.albums;
+                                                if (each.type === "playlist") {
+                                                  setPlaylistToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }
+                                              }}
+                                              className="songs-search"
+                                              key={each.id}
+                                            >
+                                              <div className="w-[25%] mr-5">
+                                                {(
+                                                  <img
+                                                    className="max-w-[100%]  block"
+                                                    onClick={() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation:
+                                                          "searchresults3",
+                                                      });
+                                                      setTimeout(() => {
+                                                        setSearchBar({
+                                                          ...searchBar,
+                                                          animation: "",
+                                                        });
+                                                      }, 1000);
+                                                      const songsArr =
+                                                        ea[
+                                                          Object.keys(ea).join(
+                                                            ", "
+                                                          )
+                                                        ].trending.songs;
+                                                      if (
+                                                        each.type === "playlist"
+                                                      ) {
+                                                        setPlaylistToSearch(
+                                                          each.id
+                                                        );
+                                                      } else if (
+                                                        each.type === "song"
+                                                      ) {
+                                                        playSelectedSong(
+                                                          each.id,
+                                                          songsArr
+                                                        );
+                                                      }
+                                                    }}
+                                                    src={
+                                                      each.image[
+                                                        each.image.length - 1
+                                                      ].link
+                                                    }
+                                                    alt={each.titile}
+                                                  />
+                                                ) || (
+                                                  <img
+                                                    src="/logo.webp"
+                                                    className="skeleton"
+                                                  />
+                                                )}
                                                 <img
-                                                  className="max-w-[100%]  block"
                                                   onClick={() => {
                                                     setSearchBar({
                                                       ...searchBar,
@@ -1369,146 +1456,13 @@ const Home = () => {
                                                       );
                                                     }
                                                   }}
-                                                  src={
-                                                    each.image[
-                                                      each.image.length - 1
-                                                    ].link
-                                                  }
-                                                  alt={each.titile}
-                                                />
-                                              ) || (
-                                                <img
+                                                  id="songs-logo-search"
                                                   src="/logo.webp"
-                                                  className="skeleton"
+                                                  alt="logo"
                                                 />
-                                              )}
-                                              <img
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  if (
-                                                    each.type === "playlist"
-                                                  ) {
-                                                    setPlaylistToSearch(
-                                                      each.id
-                                                    );
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                id="songs-logo-search"
-                                                src="/logo.webp"
-                                                alt="logo"
-                                              />
-                                            </div>
-                                            {(
-                                              <p
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  if (
-                                                    each.type === "playlist"
-                                                  ) {
-                                                    setPlaylistToSearch(
-                                                      each.id
-                                                    );
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                style={{ cursor: "pointer" }}
-                                              >
-                                                {each.title}
-                                              </p>
-                                            ) || (
-                                              <p className="skeleton2 w-full"></p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )
-                              )}
-                          </div>
-                        </div>
-                        <div className=" max-[600px]:w-[100%!important]">
-                          <h5>Top Charts</h5>
-                          <div>
-                            {allLanguageSongs.length !== undefined &&
-                              allLanguageSongs.map(
-                                (ea) =>
-                                  ea[Object.keys(ea).join(", ")].charts.length >
-                                    0 && (
-                                    <>
-                                      <div>
-                                        {ea[
-                                          Object.keys(ea).join(", ")
-                                        ].charts.map((each) => (
-                                          <div
-                                            onClick={() => {
-                                              setSearchBar({
-                                                ...searchBar,
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  ...searchBar,
-                                                  animation: "",
-                                                });
-                                              }, 1000);
-                                              const songsArr =
-                                                ea[Object.keys(ea).join(", ")]
-                                                  .trending.albums;
-                                              if (each.type === "playlist") {
-                                                setPlaylistToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              }
-                                            }}
-                                            className="songs-search"
-                                            key={each.id}
-                                          >
-                                            <div className="w-[25%] mr-5">
+                                              </div>
                                               {(
-                                                <img
-                                                  className="max-w-[100%]  block"
+                                                <p
                                                   onClick={() => {
                                                     setSearchBar({
                                                       ...searchBar,
@@ -1542,138 +1496,273 @@ const Home = () => {
                                                       );
                                                     }
                                                   }}
-                                                  src={
-                                                    each.image[
-                                                      each.image.length - 1
-                                                    ].link
-                                                  }
-                                                  alt={each.titile}
-                                                />
+                                                  style={{ cursor: "pointer" }}
+                                                >
+                                                  {each.title}
+                                                </p>
                                               ) || (
-                                                <img
-                                                  src="/logo.webp"
-                                                  className="skeleton"
-                                                />
+                                                <p className="skeleton2 w-full"></p>
                                               )}
-                                              <img
-                                                onClick={() => {
-                                                  setSearchBar({
-                                                    ...searchBar,
-                                                    animation: "searchresults3",
-                                                  });
-                                                  setTimeout(() => {
-                                                    setSearchBar({
-                                                      ...searchBar,
-                                                      animation: "",
-                                                    });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  if (
-                                                    each.type === "playlist"
-                                                  ) {
-                                                    setPlaylistToSearch(
-                                                      each.id
-                                                    );
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                id="songs-logo-search"
-                                                src="/logo.webp"
-                                                alt="logo"
-                                              />
                                             </div>
-                                            {(
-                                              <p
-                                                onClick={() => {
+                                          ))}
+                                        </div>
+                                      </>
+                                    )
+                                )}
+                            </div>
+                          </div>
+                          <div className=" max-[600px]:w-[100%!important]">
+                            <h5>Top Charts</h5>
+                            <div>
+                              {allLanguageSongs.length !== undefined &&
+                                allLanguageSongs.map(
+                                  (ea) =>
+                                    ea[Object.keys(ea).join(", ")].charts
+                                      .length > 0 && (
+                                      <>
+                                        <div>
+                                          {ea[
+                                            Object.keys(ea).join(", ")
+                                          ].charts.map((each) => (
+                                            <div
+                                              onClick={() => {
+                                                setSearchBar({
+                                                  ...searchBar,
+                                                  animation: "searchresults3",
+                                                });
+                                                setTimeout(() => {
                                                   setSearchBar({
                                                     ...searchBar,
-                                                    animation: "searchresults3",
+                                                    animation: "",
                                                   });
-                                                  setTimeout(() => {
+                                                }, 1000);
+                                                const songsArr =
+                                                  ea[Object.keys(ea).join(", ")]
+                                                    .trending.albums;
+                                                if (each.type === "playlist") {
+                                                  setPlaylistToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }
+                                              }}
+                                              className="songs-search"
+                                              key={each.id}
+                                            >
+                                              <div className="w-[25%] mr-5">
+                                                {(
+                                                  <img
+                                                    className="max-w-[100%]  block"
+                                                    onClick={() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation:
+                                                          "searchresults3",
+                                                      });
+                                                      setTimeout(() => {
+                                                        setSearchBar({
+                                                          ...searchBar,
+                                                          animation: "",
+                                                        });
+                                                      }, 1000);
+                                                      const songsArr =
+                                                        ea[
+                                                          Object.keys(ea).join(
+                                                            ", "
+                                                          )
+                                                        ].trending.songs;
+                                                      if (
+                                                        each.type === "playlist"
+                                                      ) {
+                                                        setPlaylistToSearch(
+                                                          each.id
+                                                        );
+                                                      } else if (
+                                                        each.type === "song"
+                                                      ) {
+                                                        playSelectedSong(
+                                                          each.id,
+                                                          songsArr
+                                                        );
+                                                      }
+                                                    }}
+                                                    src={
+                                                      each.image[
+                                                        each.image.length - 1
+                                                      ].link
+                                                    }
+                                                    alt={each.titile}
+                                                  />
+                                                ) || (
+                                                  <img
+                                                    src="/logo.webp"
+                                                    className="skeleton"
+                                                  />
+                                                )}
+                                                <img
+                                                  onClick={() => {
                                                     setSearchBar({
                                                       ...searchBar,
-                                                      animation: "",
+                                                      animation:
+                                                        "searchresults3",
                                                     });
-                                                  }, 1000);
-                                                  const songsArr =
-                                                    ea[
-                                                      Object.keys(ea).join(", ")
-                                                    ].trending.songs;
-                                                  if (
-                                                    each.type === "playlist"
-                                                  ) {
-                                                    setPlaylistToSearch(
-                                                      each.id
-                                                    );
-                                                  } else if (
-                                                    each.type === "song"
-                                                  ) {
-                                                    playSelectedSong(
-                                                      each.id,
-                                                      songsArr
-                                                    );
-                                                  }
-                                                }}
-                                                style={{ cursor: "pointer" }}
-                                              >
-                                                {each.title}
-                                              </p>
-                                            ) || <p className="skeleton2"></p>}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )
-                              )}
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    const songsArr =
+                                                      ea[
+                                                        Object.keys(ea).join(
+                                                          ", "
+                                                        )
+                                                      ].trending.songs;
+                                                    if (
+                                                      each.type === "playlist"
+                                                    ) {
+                                                      setPlaylistToSearch(
+                                                        each.id
+                                                      );
+                                                    } else if (
+                                                      each.type === "song"
+                                                    ) {
+                                                      playSelectedSong(
+                                                        each.id,
+                                                        songsArr
+                                                      );
+                                                    }
+                                                  }}
+                                                  id="songs-logo-search"
+                                                  src="/logo.webp"
+                                                  alt="logo"
+                                                />
+                                              </div>
+                                              {(
+                                                <p
+                                                  onClick={() => {
+                                                    setSearchBar({
+                                                      ...searchBar,
+                                                      animation:
+                                                        "searchresults3",
+                                                    });
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        ...searchBar,
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    const songsArr =
+                                                      ea[
+                                                        Object.keys(ea).join(
+                                                          ", "
+                                                        )
+                                                      ].trending.songs;
+                                                    if (
+                                                      each.type === "playlist"
+                                                    ) {
+                                                      setPlaylistToSearch(
+                                                        each.id
+                                                      );
+                                                    } else if (
+                                                      each.type === "song"
+                                                    ) {
+                                                      playSelectedSong(
+                                                        each.id,
+                                                        songsArr
+                                                      );
+                                                    }
+                                                  }}
+                                                  style={{ cursor: "pointer" }}
+                                                >
+                                                  {each.title}
+                                                </p>
+                                              ) || (
+                                                <p className="skeleton2"></p>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </>
+                                    )
+                                )}
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      searchBar.animation === "searchresults2" &&
-                      searchBar.search !== "" &&
-                      searchResults.length > 0 && (
-                        <>
-                          {searchResults[0].songs.length > 0 && (
-                            <div className=" max-[600px]:w-[100%!important]">
-                              <h5>Songs</h5>
-                              <div>
-                                {searchResults.length !== undefined && (
-                                  <div>
-                                    {searchResults[0].songs.map((each) => (
-                                      <div
-                                        onClick={() => {
-                                          setObtaindAlbum(null);
-                                          setSearchBar({
-                                            search: "",
-                                            animation: "searchresults3",
-                                          });
-                                          setTimeout(() => {
+                        </>
+                      ) : (
+                        searchBar.animation === "searchresults2" &&
+                        searchBar.search !== "" &&
+                        searchResults.length > 0 && (
+                          <>
+                            {searchResults[0].songs.length > 0 && (
+                              <div className=" max-[600px]:w-[100%!important]">
+                                <h5>Songs</h5>
+                                <div>
+                                  {searchResults.length !== undefined && (
+                                    <div>
+                                      {searchResults[0].songs.map((each) => (
+                                        <div
+                                          onClick={() => {
+                                            setObtaindAlbum(null);
                                             setSearchBar({
                                               search: "",
-                                              animation: "",
+                                              animation: "searchresults3",
                                             });
-                                          }, 1000);
-                                          const songsArr =
-                                            searchResults[0].songs;
+                                            setTimeout(() => {
+                                              setSearchBar({
+                                                search: "",
+                                                animation: "",
+                                              });
+                                            }, 1000);
+                                            const songsArr =
+                                              searchResults[0].songs;
 
-                                          playSelectedSong(each.id, songsArr);
-                                        }}
-                                        className="songs-search"
-                                        key={each.id}
-                                      >
-                                        <div className="w-[25%] mr-5">
-                                          {(
+                                            playSelectedSong(each.id, songsArr);
+                                          }}
+                                          className="songs-search"
+                                          key={each.id}
+                                        >
+                                          <div className="w-[25%] mr-5">
+                                            {(
+                                              <img
+                                                className="max-w-[100%]  block"
+                                                onClick={() => {
+                                                  setObtaindAlbum(null);
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+                                                  const songsArr =
+                                                    searchResults[0].songs;
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                }}
+                                                src={
+                                                  each.image[
+                                                    each.image.length - 1
+                                                  ].url
+                                                }
+                                                alt={each.title}
+                                              />
+                                            ) || (
+                                              <img
+                                                src="/logo.webp"
+                                                className="skeleton"
+                                              />
+                                            )}
                                             <img
-                                              className="max-w-[100%]  block"
                                               onClick={() => {
                                                 setObtaindAlbum(null);
                                                 setSearchBar({
@@ -1693,109 +1782,104 @@ const Home = () => {
                                                   songsArr
                                                 );
                                               }}
-                                              src={
-                                                each.image[
-                                                  each.image.length - 1
-                                                ].url
-                                              }
-                                              alt={each.title}
-                                            />
-                                          ) || (
-                                            <img
+                                              id="songs-logo-search"
                                               src="/logo.webp"
-                                              className="skeleton"
+                                              alt="logo"
                                             />
-                                          )}
-                                          <img
-                                            onClick={() => {
-                                              setObtaindAlbum(null);
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                                          </div>
+                                          {(
+                                            <p
+                                              onClick={() => {
+                                                setObtaindAlbum(null);
                                                 setSearchBar({
                                                   search: "",
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
-                                            }}
-                                            id="songs-logo-search"
-                                            src="/logo.webp"
-                                            alt="logo"
-                                          />
-                                        </div>
-                                        {(
-                                          <p
-                                            onClick={() => {
-                                              setObtaindAlbum(null);
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
 
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              playSelectedSong(
-                                                each.id,
-                                                songsArr
-                                              );
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            {each.title}
-                                          </p>
-                                        ) || (
-                                          <p className="skeleton2 w-full"></p>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
+                                                const songsArr =
+                                                  searchResults[0].songs;
+                                                playSelectedSong(
+                                                  each.id,
+                                                  songsArr
+                                                );
+                                              }}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {each.title}
+                                            </p>
+                                          ) || (
+                                            <p className="skeleton2 w-full"></p>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {searchResults[1].albums.length > 0 && (
-                            <div className=" max-[600px]:w-[100%!important]">
-                              <h5>Albums</h5>
-                              <div>
-                                {searchResults.length !== undefined && (
-                                  <div>
-                                    {searchResults[1].albums.map((each) => (
-                                      <div
-                                        onClick={() => {
-                                          setSearchBar({
-                                            search: "",
-                                            animation: "searchresults3",
-                                          });
-                                          setTimeout(() => {
+                            )}
+                            {searchResults[1].albums.length > 0 && (
+                              <div className=" max-[600px]:w-[100%!important]">
+                                <h5>Albums</h5>
+                                <div>
+                                  {searchResults.length !== undefined && (
+                                    <div>
+                                      {searchResults[1].albums.map((each) => (
+                                        <div
+                                          onClick={() => {
                                             setSearchBar({
                                               search: "",
-                                              animation: "",
+                                              animation: "searchresults3",
                                             });
-                                          }, 1000);
+                                            setTimeout(() => {
+                                              setSearchBar({
+                                                search: "",
+                                                animation: "",
+                                              });
+                                            }, 1000);
 
-                                          setAlbumToSearch(each.id);
-                                        }}
-                                        className="songs-search"
-                                        key={each.id}
-                                      >
-                                        <div className="w-[25%] mr-5">
-                                          {(
+                                            setAlbumToSearch(each.id);
+                                          }}
+                                          className="songs-search"
+                                          key={each.id}
+                                        >
+                                          <div className="w-[25%] mr-5">
+                                            {(
+                                              <img
+                                                className="max-w-[100%]  block"
+                                                onClick={() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+                                                  setAlbumToSearch(each.id);
+                                                }}
+                                                src={
+                                                  each.image[
+                                                    each.image.length - 1
+                                                  ].url
+                                                }
+                                                alt={each.title}
+                                              />
+                                            ) || (
+                                              <img
+                                                src="/logo.webp"
+                                                className="skeleton"
+                                              />
+                                            )}
+
                                             <img
-                                              className="max-w-[100%]  block"
                                               onClick={() => {
                                                 setSearchBar({
                                                   search: "",
@@ -1809,104 +1893,13 @@ const Home = () => {
                                                 }, 1000);
                                                 setAlbumToSearch(each.id);
                                               }}
-                                              src={
-                                                each.image[
-                                                  each.image.length - 1
-                                                ].url
-                                              }
-                                              alt={each.title}
-                                            />
-                                          ) || (
-                                            <img
+                                              id="songs-logo-search"
                                               src="/logo.webp"
-                                              className="skeleton"
+                                              alt="logo"
                                             />
-                                          )}
-
-                                          <img
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
-                                              setAlbumToSearch(each.id);
-                                            }}
-                                            id="songs-logo-search"
-                                            src="/logo.webp"
-                                            alt="logo"
-                                          />
-                                        </div>
-                                        {(
-                                          <p
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
-
-                                              setAlbumToSearch(each.id);
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            {each.title}
-                                          </p>
-                                        ) || (
-                                          <p className="skeleton2 w-full"></p>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          {searchResults[2].playlists.length > 0 && (
-                            <div className=" max-[600px]:w-[100%!important]">
-                              <h5>Playlists</h5>
-                              <div>
-                                {searchResults.length !== undefined && (
-                                  <div>
-                                    {searchResults[2].playlists.map((each) => (
-                                      <div
-                                        onClick={() => {
-                                          setSearchBar({
-                                            search: "",
-                                            animation: "searchresults3",
-                                          });
-                                          setTimeout(() => {
-                                            setSearchBar({
-                                              search: "",
-                                              animation: "",
-                                            });
-                                          }, 1000);
-                                          const songsArr =
-                                            searchResults[0].songs;
-
-                                          if (each.type === "playlist") {
-                                            setPlaylistToSearch(each.id);
-                                          } else if (each.type === "song") {
-                                            playSelectedSong(each.id, songsArr);
-                                          }
-                                        }}
-                                        className="songs-search"
-                                        key={each.id}
-                                      >
-                                        <div className="w-[25%] mr-5">
+                                          </div>
                                           {(
-                                            <img
-                                              className="max-w-[100%]  block"
+                                            <p
                                               onClick={() => {
                                                 setSearchBar({
                                                   search: "",
@@ -1918,76 +1911,46 @@ const Home = () => {
                                                     animation: "",
                                                   });
                                                 }, 1000);
-                                                const songsArr =
-                                                  searchResults[0].songs;
-                                                if (each.type === "playlist") {
-                                                  setPlaylistToSearch(each.id);
-                                                } else if (
-                                                  each.type === "song"
-                                                ) {
-                                                  playSelectedSong(
-                                                    each.id,
-                                                    songsArr
-                                                  );
-                                                }
-                                              }}
-                                              src={
-                                                each.image[
-                                                  each.image.length - 1
-                                                ].url
-                                              }
-                                              alt={each.title}
-                                            />
-                                          ) || (
-                                            <img
-                                              src="/logo.webp"
-                                              className="skeleton"
-                                            />
-                                          )}
-                                          <img
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              if (each.type === "playlist") {
-                                                setPlaylistToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              }
-                                            }}
-                                            id="songs-logo-search"
-                                            src="/logo.webp"
-                                            alt="logo"
-                                          />
-                                        </div>
-                                        {(
-                                          <p
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
 
+                                                setAlbumToSearch(each.id);
+                                              }}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {each.title}
+                                            </p>
+                                          ) || (
+                                            <p className="skeleton2 w-full"></p>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {searchResults[2].playlists.length > 0 && (
+                              <div className=" max-[600px]:w-[100%!important]">
+                                <h5>Playlists</h5>
+                                <div>
+                                  {searchResults.length !== undefined && (
+                                    <div>
+                                      {searchResults[2].playlists.map(
+                                        (each) => (
+                                          <div
+                                            onClick={() => {
+                                              setSearchBar({
+                                                search: "",
+                                                animation: "searchresults3",
+                                              });
+                                              setTimeout(() => {
+                                                setSearchBar({
+                                                  search: "",
+                                                  animation: "",
+                                                });
+                                              }, 1000);
                                               const songsArr =
                                                 searchResults[0].songs;
+
                                               if (each.type === "playlist") {
                                                 setPlaylistToSearch(each.id);
                                               } else if (each.type === "song") {
@@ -1997,60 +1960,231 @@ const Home = () => {
                                                 );
                                               }
                                             }}
-                                            style={{ cursor: "pointer" }}
+                                            className="songs-search"
+                                            key={each.id}
                                           >
-                                            {each.title}
-                                          </p>
-                                        ) || (
-                                          <p className="skeleton2 w-full"></p>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
+                                            <div className="w-[25%] mr-5">
+                                              {(
+                                                <img
+                                                  className="max-w-[100%]  block"
+                                                  onClick={() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation:
+                                                        "searchresults3",
+                                                    });
+                                                    setTimeout(() => {
+                                                      setSearchBar({
+                                                        search: "",
+                                                        animation: "",
+                                                      });
+                                                    }, 1000);
+                                                    const songsArr =
+                                                      searchResults[0].songs;
+                                                    if (
+                                                      each.type === "playlist"
+                                                    ) {
+                                                      setPlaylistToSearch(
+                                                        each.id
+                                                      );
+                                                    } else if (
+                                                      each.type === "song"
+                                                    ) {
+                                                      playSelectedSong(
+                                                        each.id,
+                                                        songsArr
+                                                      );
+                                                    }
+                                                  }}
+                                                  src={
+                                                    each.image[
+                                                      each.image.length - 1
+                                                    ].url
+                                                  }
+                                                  alt={each.title}
+                                                />
+                                              ) || (
+                                                <img
+                                                  src="/logo.webp"
+                                                  className="skeleton"
+                                                />
+                                              )}
+                                              <img
+                                                onClick={() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+                                                  const songsArr =
+                                                    searchResults[0].songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
+                                                }}
+                                                id="songs-logo-search"
+                                                src="/logo.webp"
+                                                alt="logo"
+                                              />
+                                            </div>
+                                            {(
+                                              <p
+                                                onClick={() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+
+                                                  const songsArr =
+                                                    searchResults[0].songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  }
+                                                }}
+                                                style={{ cursor: "pointer" }}
+                                              >
+                                                {each.title}
+                                              </p>
+                                            ) || (
+                                              <p className="skeleton2 w-full"></p>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {searchResults[3].topQuery.length > 0 && (
-                            <div className=" max-[600px]:w-[100%!important]">
-                              <h5>Top Query</h5>
-                              <div>
-                                {searchResults.length !== undefined && (
-                                  <div>
-                                    {searchResults[3].topQuery.map((each) => (
-                                      <div
-                                        onClick={() => {
-                                          setSearchBar({
-                                            search: "",
-                                            animation: "searchresults3",
-                                          });
-                                          setTimeout(() => {
+                            )}
+                            {searchResults[3].topQuery.length > 0 && (
+                              <div className=" max-[600px]:w-[100%!important]">
+                                <h5>Top Query</h5>
+                                <div>
+                                  {searchResults.length !== undefined && (
+                                    <div>
+                                      {searchResults[3].topQuery.map((each) => (
+                                        <div
+                                          onClick={() => {
                                             setSearchBar({
                                               search: "",
-                                              animation: "",
+                                              animation: "searchresults3",
                                             });
-                                          }, 1000);
-                                          const songsArr =
-                                            searchResults[0].songs;
+                                            setTimeout(() => {
+                                              setSearchBar({
+                                                search: "",
+                                                animation: "",
+                                              });
+                                            }, 1000);
+                                            const songsArr =
+                                              searchResults[0].songs;
 
-                                          if (each.type === "playlist") {
-                                            setPlaylistToSearch(each.id);
-                                          } else if (each.type === "song") {
-                                            playSelectedSong(each.id, songsArr);
-                                          } else if (each.type === "artist") {
-                                            setArtistToSearch({
-                                              id: each.id,
-                                              details: each,
-                                            });
-                                          }
-                                        }}
-                                        className="songs-search"
-                                        key={each.id}
-                                      >
-                                        <div className="w-[25%] mr-5">
-                                          {(
+                                            if (each.type === "playlist") {
+                                              setPlaylistToSearch(each.id);
+                                            } else if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            } else if (each.type === "artist") {
+                                              setPage(0);
+                                              setObtaindAlbum(null);
+                                              setArtistToSearch({
+                                                id: each.id,
+                                                details: each,
+                                              });
+                                            }
+                                          }}
+                                          className="songs-search"
+                                          key={each.id}
+                                        >
+                                          <div className="w-[25%] mr-5">
+                                            {(
+                                              <img
+                                                className="max-w-[100%]  block"
+                                                onClick={() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+                                                  const songsArr =
+                                                    searchResults[0].songs;
+                                                  if (
+                                                    each.type === "playlist"
+                                                  ) {
+                                                    setPlaylistToSearch(
+                                                      each.id
+                                                    );
+                                                  } else if (
+                                                    each.type === "song"
+                                                  ) {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  } else if (
+                                                    each.type === "artist"
+                                                  ) {
+                                                    setPage(0);
+                                                    setObtaindAlbum(null);
+                                                    setArtistToSearch({
+                                                      id: each.id,
+                                                      details: each,
+                                                    });
+                                                  }
+                                                }}
+                                                src={
+                                                  each.image[
+                                                    each.image.length - 1
+                                                  ].url
+                                                }
+                                                alt={each.title}
+                                              />
+                                            ) || (
+                                              <img
+                                                src="/logo.webp"
+                                                className="skeleton"
+                                              />
+                                            )}
                                             <img
-                                              className="max-w-[100%]  block"
                                               onClick={() => {
                                                 setSearchBar({
                                                   search: "",
@@ -2076,144 +2210,155 @@ const Home = () => {
                                                 } else if (
                                                   each.type === "artist"
                                                 ) {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
                                                   setArtistToSearch({
                                                     id: each.id,
                                                     details: each,
                                                   });
                                                 }
                                               }}
-                                              src={
-                                                each.image[
-                                                  each.image.length - 1
-                                                ].url
-                                              }
-                                              alt={each.title}
-                                            />
-                                          ) || (
-                                            <img
+                                              id="songs-logo-search"
                                               src="/logo.webp"
-                                              className="skeleton"
+                                              alt="logo"
                                             />
-                                          )}
-                                          <img
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                                          </div>
+                                          {(
+                                            <p
+                                              onClick={() => {
                                                 setSearchBar({
                                                   search: "",
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              if (each.type === "playlist") {
-                                                setPlaylistToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              } else if (
-                                                each.type === "artist"
-                                              ) {
-                                                setArtistToSearch({
-                                                  id: each.id,
-                                                  details: each,
-                                                });
-                                              }
-                                            }}
-                                            id="songs-logo-search"
-                                            src="/logo.webp"
-                                            alt="logo"
-                                          />
-                                        </div>
-                                        {(
-                                          <p
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
 
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              if (each.type === "playlist") {
-                                                setPlaylistToSearch(each.id);
-                                              } else if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              } else if (
-                                                each.type === "artist"
-                                              ) {
-                                                setArtistToSearch({
-                                                  id: each.id,
-                                                  details: each,
-                                                });
-                                              }
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            {each.title}
-                                          </p>
-                                        ) || (
-                                          <p className="skeleton2 w-full"></p>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
+                                                const songsArr =
+                                                  searchResults[0].songs;
+                                                if (each.type === "playlist") {
+                                                  setPlaylistToSearch(each.id);
+                                                } else if (
+                                                  each.type === "song"
+                                                ) {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                } else if (
+                                                  each.type === "artist"
+                                                ) {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
+                                                  setArtistToSearch({
+                                                    id: each.id,
+                                                    details: each,
+                                                  });
+                                                }
+                                              }}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {each.title}
+                                            </p>
+                                          ) || (
+                                            <p className="skeleton2 w-full"></p>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {searchResults[4].artists.length > 0 && (
-                            <div className=" max-[600px]:w-[100%!important]">
-                              <h5>Artists</h5>
-                              <div>
-                                {searchResults.length !== undefined && (
-                                  <div>
-                                    {searchResults[4].artists.map((each) => (
-                                      <div
-                                        onClick={() => {
-                                          setSearchBar({
-                                            search: "",
-                                            animation: "searchresults3",
-                                          });
-                                          setTimeout(() => {
+                            )}
+                            {searchResults[4].artists.length > 0 && (
+                              <div className=" max-[600px]:w-[100%!important]">
+                                <h5>Artists</h5>
+                                <div>
+                                  {searchResults.length !== undefined && (
+                                    <div>
+                                      {searchResults[4].artists.map((each) => (
+                                        <div
+                                          onClick={() => {
                                             setSearchBar({
                                               search: "",
-                                              animation: "",
+                                              animation: "searchresults3",
                                             });
-                                          }, 1000);
-                                          const songsArr =
-                                            searchResults[0].songs;
+                                            setTimeout(() => {
+                                              setSearchBar({
+                                                search: "",
+                                                animation: "",
+                                              });
+                                            }, 1000);
+                                            const songsArr =
+                                              searchResults[0].songs;
 
-                                          if (each.type === "song") {
-                                            playSelectedSong(each.id, songsArr);
-                                          } else if (each.type === "artist") {
-                                            setArtistToSearch({
-                                              id: each.id,
-                                              details: each,
-                                            });
-                                          }
-                                        }}
-                                        className="songs-search"
-                                        key={each.id}
-                                      >
-                                        <div className="w-[25%] mr-5">
-                                          {(
+                                            if (each.type === "song") {
+                                              playSelectedSong(
+                                                each.id,
+                                                songsArr
+                                              );
+                                            } else if (each.type === "artist") {
+                                              setPage(0);
+                                              setObtaindAlbum(null);
+                                              setArtistToSearch({
+                                                id: each.id,
+                                                details: each,
+                                              });
+                                            }
+                                          }}
+                                          className="songs-search"
+                                          key={each.id}
+                                        >
+                                          <div className="w-[25%] mr-5">
+                                            {(
+                                              <img
+                                                className="max-w-[100%]  block"
+                                                onClick={() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "searchresults3",
+                                                  });
+                                                  setTimeout(() => {
+                                                    setSearchBar({
+                                                      search: "",
+                                                      animation: "",
+                                                    });
+                                                  }, 1000);
+                                                  const songsArr =
+                                                    searchResults[0].songs;
+                                                  if (each.type === "song") {
+                                                    playSelectedSong(
+                                                      each.id,
+                                                      songsArr
+                                                    );
+                                                  } else if (
+                                                    each.type === "artist"
+                                                  ) {
+                                                    setPage(0);
+                                                    setObtaindAlbum(null);
+                                                    setArtistToSearch({
+                                                      id: each.id,
+                                                      details: each,
+                                                    });
+                                                  }
+                                                }}
+                                                src={
+                                                  each.image[
+                                                    each.image.length - 1
+                                                  ].url
+                                                }
+                                                alt={each.title}
+                                              />
+                                            ) || (
+                                              <img
+                                                src="/logo.webp"
+                                                className="skeleton"
+                                              />
+                                            )}
                                             <img
-                                              className="max-w-[100%]  block"
                                               onClick={() => {
                                                 setSearchBar({
                                                   search: "",
@@ -2235,107 +2380,71 @@ const Home = () => {
                                                 } else if (
                                                   each.type === "artist"
                                                 ) {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
                                                   setArtistToSearch({
                                                     id: each.id,
                                                     details: each,
                                                   });
                                                 }
                                               }}
-                                              src={
-                                                each.image[
-                                                  each.image.length - 1
-                                                ].url
-                                              }
-                                              alt={each.title}
-                                            />
-                                          ) || (
-                                            <img
+                                              id="songs-logo-search"
                                               src="/logo.webp"
-                                              className="skeleton"
+                                              alt="logo"
                                             />
-                                          )}
-                                          <img
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
+                                          </div>
+                                          {(
+                                            <p
+                                              onClick={() => {
                                                 setSearchBar({
                                                   search: "",
-                                                  animation: "",
+                                                  animation: "searchresults3",
                                                 });
-                                              }, 1000);
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              } else if (
-                                                each.type === "artist"
-                                              ) {
-                                                setArtistToSearch({
-                                                  id: each.id,
-                                                  details: each,
-                                                });
-                                              }
-                                            }}
-                                            id="songs-logo-search"
-                                            src="/logo.webp"
-                                            alt="logo"
-                                          />
-                                        </div>
-                                        {(
-                                          <p
-                                            onClick={() => {
-                                              setSearchBar({
-                                                search: "",
-                                                animation: "searchresults3",
-                                              });
-                                              setTimeout(() => {
-                                                setSearchBar({
-                                                  search: "",
-                                                  animation: "",
-                                                });
-                                              }, 1000);
+                                                setTimeout(() => {
+                                                  setSearchBar({
+                                                    search: "",
+                                                    animation: "",
+                                                  });
+                                                }, 1000);
 
-                                              const songsArr =
-                                                searchResults[0].songs;
-                                              if (each.type === "song") {
-                                                playSelectedSong(
-                                                  each.id,
-                                                  songsArr
-                                                );
-                                              } else if (
-                                                each.type === "artist"
-                                              ) {
-                                                setArtistToSearch({
-                                                  id: each.id,
-                                                  details: each,
-                                                });
-                                              }
-                                            }}
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            {each.title}
-                                          </p>
-                                        ) || (
-                                          <p className="skeleton2 w-full"></p>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
+                                                const songsArr =
+                                                  searchResults[0].songs;
+                                                if (each.type === "song") {
+                                                  playSelectedSong(
+                                                    each.id,
+                                                    songsArr
+                                                  );
+                                                } else if (
+                                                  each.type === "artist"
+                                                ) {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
+                                                  setArtistToSearch({
+                                                    id: each.id,
+                                                    details: each,
+                                                  });
+                                                }
+                                              }}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {each.title}
+                                            </p>
+                                          ) || (
+                                            <p className="skeleton2 w-full"></p>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </>
-                      )
-                    )}
+                            )}
+                          </>
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {whatToDisplay === displayingContent.home ? (
                   <>
@@ -2348,7 +2457,7 @@ const Home = () => {
                               : displayingContent.albums
                           );
                         }}
-                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[600px]:w-12 max-[600px]:h-12 max-[600px]:top-[93.15%] max-[600px]:right-[79.3%] max-[600px]:animate-none"
+                        className="fixed top-10 z-10 h-16 w-16 animate-bounce rounded-full  right-5 object-fill cursor-pointer max-[600px]:hidden"
                         src={
                           obtainedAlbum.image[obtainedAlbum.image.length - 1]
                             .link === undefined
@@ -2682,6 +2791,114 @@ const Home = () => {
                                   </Tilt>
                                 ))}
                               </div>
+                              {ea[
+                                Object.keys(ea).join(", ")
+                              ].trending.albums.flatMap((e) =>
+                                e.artists.map((each) => each)
+                              ).length > 0 && (
+                                <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
+                                  {Object.keys(ea).join(", ")}&nbsp;{"Artists"}
+                                  <button
+                                    onClick={() => {
+                                      moveCarousel(
+                                        "left",
+                                        `trendingartists${Object.keys(ea).join(
+                                          ", "
+                                        )}`
+                                      );
+                                    }}
+                                    type="button"
+                                    className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  >
+                                    ❮
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      moveCarousel(
+                                        "right",
+                                        `trendingartists${Object.keys(ea).join(
+                                          ", "
+                                        )}`
+                                      );
+                                    }}
+                                    type="button"
+                                    className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  >
+                                    ❯
+                                  </button>
+                                </h1>
+                              )}
+                              <div
+                                id={`trendingartists${Object.keys(ea).join(
+                                  ", "
+                                )}`}
+                                className="tiltcon"
+                              >
+                                {ea[
+                                  Object.keys(ea).join(", ")
+                                ].trending.albums.map((e) =>
+                                  e.artists.map(
+                                    (each) =>
+                                      each.image[each.image.length - 1]
+                                        ?.link !== undefined && (
+                                        <Tilt
+                                          onClick={() => {
+                                            setPage(0);
+                                            setObtaindAlbum(null);
+                                            setArtistToSearch({
+                                              id: each.id,
+                                              details: each,
+                                            });
+                                          }}
+                                          className="songs2"
+                                          key={each.id}
+                                        >
+                                          <div className="song-inside-con">
+                                            {(
+                                              <img
+                                                className="min-w-full rounded-[100%!important]"
+                                                onClick={() => {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
+                                                  setArtistToSearch({
+                                                    id: each.id,
+                                                    details: each,
+                                                  });
+                                                }}
+                                                src={
+                                                  each.image[
+                                                    each.image.length - 1
+                                                  ].link
+                                                }
+                                                alt={each.name}
+                                              />
+                                            ) || (
+                                              <img
+                                                src="/logo.webp"
+                                                className="skeleton"
+                                              />
+                                            )}
+                                          </div>
+                                          {(
+                                            <p
+                                              onClick={() => {
+                                                setPage(0);
+                                                setObtaindAlbum(null);
+                                                setArtistToSearch({
+                                                  id: each.id,
+                                                  details: each,
+                                                });
+                                              }}
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {each.name}
+                                            </p>
+                                          ) || <p className="skeleton2"></p>}
+                                        </Tilt>
+                                      )
+                                  )
+                                )}
+                              </div>
                             </>
                           )
                       )}
@@ -2879,6 +3096,110 @@ const Home = () => {
                                       )}
                                     </Tilt>
                                   )
+                                )}
+                              </div>
+                              {ea[Object.keys(ea).join(", ")].albums.flatMap(
+                                (e) => e.primaryArtists.map((each) => each)
+                              ).length > 0 && (
+                                <h1 className="max-[600px]:mt-[3.5%] max-[600px]:mb-[3.5%]">
+                                  {Object.keys(ea).join(", ")}&nbsp;{"Artists"}
+                                  <button
+                                    onClick={() => {
+                                      moveCarousel(
+                                        "left",
+                                        `otherartists${Object.keys(ea).join(
+                                          ", "
+                                        )}`
+                                      );
+                                    }}
+                                    type="button"
+                                    className="max-[600px]:hidden text-white text-sm ml-[1%] mr-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  >
+                                    ❮
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      moveCarousel(
+                                        "right",
+                                        `otherartists${Object.keys(ea).join(
+                                          ", "
+                                        )}`
+                                      );
+                                    }}
+                                    type="button"
+                                    className="max-[600px]:hidden text-white text-sm ml-[.5%] px-[.6%] rounded-3xl bg-[#ffffff20]"
+                                  >
+                                    ❯
+                                  </button>
+                                </h1>
+                              )}
+
+                              <div
+                                id={`otherartists${Object.keys(ea).join(", ")}`}
+                                className="tiltcon"
+                              >
+                                {ea[Object.keys(ea).join(", ")].albums.map(
+                                  (e) =>
+                                    e.primaryArtists.map(
+                                      (each) =>
+                                        each.image[each.image.length - 1]
+                                          ?.link !== undefined && (
+                                          <Tilt
+                                            onClick={() => {
+                                              setPage(0);
+                                              setObtaindAlbum(null);
+                                              setArtistToSearch({
+                                                id: each.id,
+                                                details: each,
+                                              });
+                                            }}
+                                            className="songs2"
+                                            key={each.id}
+                                          >
+                                            <div className="song-inside-con">
+                                              {(
+                                                <img
+                                                  className="min-w-full rounded-[100%!important]"
+                                                  onClick={() => {
+                                                    setPage(0);
+                                                    setObtaindAlbum(null);
+                                                    setArtistToSearch({
+                                                      id: each.id,
+                                                      details: each,
+                                                    });
+                                                  }}
+                                                  src={
+                                                    each.image[
+                                                      each.image.length - 1
+                                                    ].link
+                                                  }
+                                                  alt={each.name}
+                                                />
+                                              ) || (
+                                                <img
+                                                  src="/logo.webp"
+                                                  className="skeleton"
+                                                />
+                                              )}
+                                            </div>
+                                            {(
+                                              <p
+                                                onClick={() => {
+                                                  setPage(0);
+                                                  setObtaindAlbum(null);
+                                                  setArtistToSearch({
+                                                    id: each.id,
+                                                    details: each,
+                                                  });
+                                                }}
+                                                style={{ cursor: "pointer" }}
+                                              >
+                                                {each.name}
+                                              </p>
+                                            ) || <p className="skeleton2"></p>}
+                                          </Tilt>
+                                        )
+                                    )
                                 )}
                               </div>
                             </>
@@ -3260,6 +3581,7 @@ const Home = () => {
                       setPlaySong={setPlaySong}
                       playSong={playSong}
                       setObtaindAlbum={setObtaindAlbum}
+                      getArtist={getArtist}
                     />
                   )
                 )}
@@ -3453,14 +3775,40 @@ const Home = () => {
                     }
                     className="selectedcomponent mt-[4.5%] mb-[2%]"
                   ></div>
-                  <MdHomeFilled
-                    onClick={() => {
-                      setSelectedComponent("home");
-                    }}
-                    fontSize={"1.9rem"}
-                    color="#9794ff"
-                    className="mb-[3%] mt-[5%]"
-                  />
+
+                  {obtainedAlbum !== null &&
+                  selectedComponent === "home" &&
+                  whatToDisplay === displayingContent.home ? (
+                    <img
+                      onClick={() => {
+                        setWhatToDisplay(
+                          whatToDisplay === displayingContent.albums
+                            ? displayingContent.home
+                            : displayingContent.albums
+                        );
+                      }}
+                      className="h-8 w-8 mb-[2.3%]  mt-[5%] z-20 rounded-full "
+                      src={
+                        obtainedAlbum.image[obtainedAlbum.image.length - 1]
+                          .link === undefined
+                          ? obtainedAlbum.image[obtainedAlbum.image.length - 1]
+                              .url
+                          : obtainedAlbum.image[obtainedAlbum.image.length - 1]
+                              .link
+                      }
+                      alt={obtainedAlbum.id}
+                    />
+                  ) : (
+                    <MdHomeFilled
+                      onClick={() => {
+                        setWhatToDisplay(displayingContent.home);
+                        setSelectedComponent("home");
+                      }}
+                      fontSize={"1.9rem"}
+                      color="#9794ff"
+                      className="mb-[2.7%] mt-[5%] ml-[.5%]"
+                    />
+                  )}
                   <BiSolidPlaylist
                     onClick={() => {
                       setSelectedComponent("playlist");

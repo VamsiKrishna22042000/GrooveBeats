@@ -115,6 +115,13 @@ input[type="search"] {
   font-size: 1.2rem;
 }
 
+@media screen and (max-width: 600px) {
+  input[type="search"] {
+    max-width: 90%;
+    padding-left: 10%;
+  }
+}
+
 /* Standard style for Firefox */
 input[type="search"]::-ms-clear {
   display: none;
@@ -386,6 +393,15 @@ input[type="search"]::-ms-clear {
     max-width: 20%;
     @apply max-[600px]:min-w-[42%] max-w-[42%] mx-[2%];
   }
+  .songs2 {
+    width: 20%;
+    border-radius: 0.3rem;
+    margin: 2%;
+    cursor: pointer;
+    min-width: 20%;
+    max-width: 20%;
+    @apply max-[600px]:min-w-[42%] max-w-[42%] mx-[2%];
+  }
 
   .fade-in {
     animation: fadeInAnimation 1.5s ease forwards;
@@ -439,6 +455,9 @@ input[type="search"]::-ms-clear {
     @apply mt-[1%] mb-[5%] overflow-hidden whitespace-nowrap text-ellipsis max-w-[100%] text-white ml-[8%] max-w-[85%];
   }
 
+  .songs2 > p {
+    @apply mt-[1%] mb-[5%] text-center overflow-hidden whitespace-nowrap text-ellipsis max-w-[100%] text-white ml-[8%] max-w-[85%];
+  }
   .home-page > div::-webkit-scrollbar {
     display: none;
   }
@@ -568,7 +587,7 @@ input[type="search"]::-ms-clear {
   }
 
   .selectedSongCon {
-    @apply relative w-[70%] flex max-h-[60%] min-h-[30%] flex-wrap overflow-x-hidden overflow-y-scroll rounded-lg self-center ml-[10%] mt-[2.5%];
+    @apply relative w-[70%] flex max-h-[60%] min-h-[60%] flex-wrap overflow-x-hidden overflow-y-scroll rounded-lg self-center ml-[10%] mt-[2.5%];
     backdrop-filter: blur(4px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
