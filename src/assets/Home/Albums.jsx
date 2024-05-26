@@ -1,9 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import "../../index.css";
+import { v4 as uuidV4 } from "uuid";
 
 /**Icons */
 import { FaPause, FaPlay, FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
+import { InfinitySpin } from "react-loader-spinner";
 
 const displayingContent = {
   home: "home",
@@ -21,7 +23,6 @@ const Albums = ({
   getArtist,
 }) => {
   const [fav, setFav] = useState(false);
-  const [load, setLoad] = useState(false);
 
   const element = useRef();
 
@@ -35,26 +36,24 @@ const Albums = ({
     }
   });
 
-  // useEffect(() => {
-  //   if (!element.current) return;
-  //   const elem = element.current;
+  const handleObserver = useCallback((entries) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      if (obtainedAlbum.type === "artist") {
+        document.getElementById("getartist").click();
+      }
+    }
+  }, []);
 
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting) {
-  //         console.log("asedfkhj");
-  //         getArtist();
-  //       }
-  //     },
-  //     { threshold: 0.7 }
-  //   );
-
-  //   observer.observe(elem);
-
-  //   return () => {
-  //     observer.unobserve(elem);
-  //   };
-  // });
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0,
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (element.current) observer.observe(element.current);
+  }, [handleObserver]);
 
   return (
     obtainedAlbum && (
@@ -166,9 +165,9 @@ const Albums = ({
             </div>
           </div>
         </div>
-        <div ref={element} className="album-songs">
+        <div className="album-songs">
           {obtainedAlbum.songs.map((each) => (
-            <div key={each.id}>
+            <div>
               <img
                 onClick={() => {
                   playSelectedSong(each.id, obtainedAlbum.songs);
@@ -239,14 +238,8 @@ const Albums = ({
             </div>
           ))}
         </div>
-        <button
-          onClick={getArtist}
-          type="button"
-          className="bg-white px-5 py-2 ml-[87%] rounded-lg cursor-pointer"
-          style={{ marginBottom: "2.5%" }}
-        >
-          Load More
-        </button>
+        <div ref={element}></div>
+        <button id="getartist" onClick={getArtist} type="button"></button>
       </>
     )
   );

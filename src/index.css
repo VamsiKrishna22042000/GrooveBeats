@@ -487,6 +487,31 @@ input[type="search"]::-ms-clear {
     animation: playerAnimation 0.5s linear;
   }
 
+  .languages {
+    @apply text-white right-[5%] text-[2rem]  cursor-pointer absolute max-[600px]:right-[3%];
+  }
+
+  .languages2 {
+    @apply text-white top-[7%] right-[6%] text-[1rem] font-thin cursor-pointer absolute py-1 px-2 rounded-lg;
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    animation: playerAnimation 0.5s linear;
+    display: none;
+  }
+
+  .loadmore {
+    @apply text-white ml-[85%] font-thin cursor-pointer  py-1 px-3 rounded-md;
+    font-size: clamp(0.6rem, 1rem, 0.8rem);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(17, 25, 40, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .languages:hover + .languages2 {
+    display: inline;
+  }
+
   .playerimage {
     width: 6.5%;
     margin: 1% 0%;
@@ -818,4 +843,147 @@ input[type="search"]::-ms-clear {
       @apply absolute p-[5.8%] rounded-3xl overflow-hidden z-0 animate-pulse;
     }
   }
+}
+
+/**login**/
+
+.login-con {
+  position: absolute !important;
+  z-index: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(17, 25, 40, 0.463);
+  border: 1px solid rgba(255, 255, 255, 0.094);
+  border-radius: 0.5rem;
+  width: 70%;
+}
+
+.login-con > div > p {
+  color: #ffffff;
+  font-size: 0.9rem;
+  margin-top: 5%;
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .login-con {
+    padding: 10%;
+    width: 85%;
+  }
+  .login-con > div > p {
+    font-size: 0.8rem;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-width: 700px) {
+  .login-con {
+    padding: 10%;
+    height: 90vh;
+    width: 85%;
+  }
+  .login-con > div > p {
+    font-size: 0.8rem;
+    margin-top: -3%;
+  }
+
+  .form-css {
+    transform: scale(0.9);
+  }
+
+  .form-css > p {
+    font-size: 1.5rem !important;
+  }
+
+  .form-css > label {
+    font-size: 0.8rem !important;
+    margin-top: 2% !important;
+  }
+}
+
+@media screen and (orientation: portrait) and (min-width: 600px) and (max-width: 1024px) {
+  .login-con {
+    padding: 2.5%;
+    width: 85%;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-width: 1025px) {
+  .login-con {
+    padding: 2.5%;
+    width: 85%;
+  }
+}
+
+@layer base {
+  .imagelogin {
+    width: 45%;
+    padding: 15%;
+    margin: 2% 0%;
+  }
+
+  .imagelogin {
+    display: block;
+    max-width: 100%;
+    @apply animate-pulse max-[600px]:portrait:hidden;
+  }
+}
+
+.form-css {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.form-css > p {
+  text-align: center;
+  font-size: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+}
+
+.form-css > label {
+  @apply mt-[5%];
+}
+
+.form-css > input {
+  border: 1px solid white;
+  outline: none;
+  margin-top: 2%;
+  background-color: transparent;
+  padding-left: 8%;
+  border-radius: 0.3rem;
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
+.form-css > input::placeholder {
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+.form-css > button {
+  border: 1px solid white;
+  margin-top: 10%;
+  padding: 2% 0%;
+  border-radius: 0.3rem;
+  transition: all linear 0.3s;
+  font-weight: bolder;
+}
+
+.form-css > button:hover {
+  color: #9794ff;
+  background-color: #ffffff;
+  font-weight: bolder;
+  transform: scale(0.9);
+}
+.form-css > button:active {
+  transform: scale(0.8);
+}
+
+.form-css > input {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
 }
