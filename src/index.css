@@ -164,7 +164,9 @@ input[type="search"]::-ms-clear {
   opacity: 0;
   transform: translateY(20vh);
   visibility: hidden;
-  transition: opacity 0.6s ease-out, transform 1.2s ease-out;
+  transition:
+    opacity 0.6s ease-out,
+    transform 1.2s ease-out;
   will-change: opacity, visibility;
 }
 
@@ -204,7 +206,7 @@ input[type="search"]::-ms-clear {
   }
 
   .searchbar {
-    @apply outline-none text-white flex pl-6 rounded-md pt-[2%] pb-[2%] mt-[3%];
+    @apply outline-none text-white flex pl-7 rounded-md pt-[2%] pb-[2%] mt-[3%];
     backdrop-filter: blur(4px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     background-color: rgba(17, 25, 40, 0.75);
@@ -212,8 +214,6 @@ input[type="search"]::-ms-clear {
   }
 
   .mic-color {
-    backdrop-filter: blur(4px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
     color: rgb(107 113 126);
   }
 
